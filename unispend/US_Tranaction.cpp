@@ -44,6 +44,7 @@ string US_Transaction::getValue(){
 //}
 
 int US_Transaction::addTransaction() {
+    string one = "1";
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
@@ -52,7 +53,7 @@ int US_Transaction::addTransaction() {
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     string sqlCommand =
-            "INSERT INTO `transactions` (`name`, `type`, `value`, `date`, `isRecurring`) VALUES ('" + name + "','" + type + "','" + value + "','" + date + "','" + recurring + "')";
+            "INSERT INTO `transactions` (`ID`, `name`, `type`, `value`, `date`, `isRecurring`) VALUES ('" + one + "','" + name + "','" + type + "','" + value + "','" + date + "','" + recurring + "')";
     stmt->execute(sqlCommand);
     return 0;
 }
