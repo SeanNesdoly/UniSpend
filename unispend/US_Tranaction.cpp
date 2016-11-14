@@ -54,6 +54,7 @@ int US_Transaction::addTransaction() {
     string sqlCommand =
             "INSERT INTO `transactions` (`name`, `type`, `value`, `date`, `isRecurring`) VALUES ('" + name + "','" + type + "','" + value + "','" + date + "','" + recurring + "')";
 
+    return 0;
 }
 int main(){
     cout << "Please enter the following:" << endl;
