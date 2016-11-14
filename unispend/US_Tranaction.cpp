@@ -53,7 +53,7 @@ int US_Transaction::addTransaction() {
     stmt->execute("USE US_Database");
     string sqlCommand =
             "INSERT INTO `transactions` (`name`, `type`, `value`, `date`, `isRecurring`) VALUES ('" + name + "','" + type + "','" + value + "','" + date + "','" + recurring + "')";
-
+    stmt->execute(sqlCommand);
     return 0;
 }
 int main(){
