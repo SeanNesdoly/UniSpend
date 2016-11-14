@@ -74,6 +74,7 @@ int main(){
     cin >> recurring;
     US_Transaction trans = US_Transaction(name, type, value, date, recurring);
     cout << trans.getName();
+    trans.addTransaction();
 
 
     return 0;
