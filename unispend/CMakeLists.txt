@@ -3,7 +3,7 @@ project(unispend)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES UniSpend.cpp US_Session.cpp US_Session.h US_Login.cpp US_Login.h US_Workspace.cpp US_Workspace.h)
+set(SOURCE_FILES UniSpend.cpp US_Login.cpp US_Login.h US_Workspace.cpp US_Workspace.h)
 add_executable(unispend.wt ${SOURCE_FILES})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
