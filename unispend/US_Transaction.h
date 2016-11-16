@@ -19,6 +19,7 @@ using namespace std;
 
 class US_Transaction{
 public:
+    US_Transaction();
     US_Transaction(string user, string name, string type, string value, string date, string recurring);
     string getUser();
     string getName();

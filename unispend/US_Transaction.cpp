@@ -2,7 +2,11 @@
 // Created by Patrick Gibson on 2016-11-13.
 //
 
+//sudo g++ -Wall -I/usr/local/include -I/usr/local/include/cppconn -o transTest US_Transaction.cpp -L/usr/local/lib -lmysqlcppconn
 #include "US_Transaction.h"
+
+US_Transaction::US_Transaction() {}
+
 US_Transaction::US_Transaction(string user, string name, string type, string value, string date, string recurring) {
     this->User = user;
     this->name = name;
@@ -157,17 +161,16 @@ int main(){
     cin >> recurring;
     US_Transaction trans = US_Transaction(user, name, type, value, date, recurring);
     trans.addTransaction();
-//    US_Transaction trans = US_Transaction("p", "q", "e", "f", "w");
-//    cout << "Name: ";
-//    string name2;
-//    cin >> name2;
-//    string date;
-//    cout << "Enter date: ";
-//    cin >> date;
-//    vector<US_Transaction> results = trans.getTransaction(name2, date);
-//    for(int i = 0; i < results.size(); i++){
-//        cout << results.at(i).getName() << results.at(i).getType() << results.at(i).getDate() << endl;
-//    }
+    cout << "Name: ";
+    string name2;
+    cin >> name2;
+    string date2;
+    cout << "Enter date: ";
+    cin >> date2;
+    vector<US_Transaction> results = trans.getTransaction(name2, date2);
+    for(int i = 0; i < results.size(); i++){
+        cout << "\n "+results.at(i).getName() << "\t" +results.at(i).getType() << "\t" +results.at(i).getDate() << endl;
+    }
 
 
 
