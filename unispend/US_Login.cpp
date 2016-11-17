@@ -15,7 +15,23 @@
 #include <Wt/WPushButton>
 
 #include "US_Login.h"
-//#include "userClass.h"
+
+#include <stdlib.h>
+#include <iostream>
+
+/*
+  Include directly the different
+  headers from cppconn/ and mysql_driver.h + mysql_util.h
+  (and mysql_connection.h). This will reduce your build time!
+*/
+
+#include <driver.h>
+#include <exception.h>
+#include <resultset.h>
+#include <statement.h>
+#include <mysql_connection.h>
+#include <mysql_driver.h>
+#include "string.h"
 
 US_Login::US_Login(WContainerWidget *parent):
     WContainerWidget(parent)
@@ -55,6 +71,43 @@ US_Login::US_Login(WContainerWidget *parent):
 void US_Login::btnLogin_Clicked() {
     // TODO: query database for existing user and handle appropriately
     bool authenticated = true;
+    // Test new user account creation
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+
+    // Try to retrieve results from the users table
+    string name = txtUser->displayText().toUTF8();
+    string pass = txtPassword->displayText().toUTF8();
+    sql::ResultSet *res;
+    bool userExists = false;
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    string sqlCommand = "INSERT INTO `users` (`name`, `password`) VALUES ('" + name + "', '" + pass + "')";
+
+    try
+    {
+       stmt->execute(sqlCommand);
+       userExists = false;
+
+    } catch(sql::SQLException e)
+    {
+        cout << endl << "User with name '" << name << "' already exists"  << endl;
+        cout << "Please enter a new username and try again" << endl;
+        userExists = true;
+    }
+
+    if (userExists == false)
+    {
+        cout << "Successfully created user with name " << name << endl;
+    }
+
+    delete stmt;
+    delete con;
+
 
     if (authenticated) { // successfully authenticated
         WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());

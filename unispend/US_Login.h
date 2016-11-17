@@ -11,6 +11,7 @@
 #pragma once
 
 #include <Wt/WContainerWidget>
+//#include "userClass.h"
 
 using namespace std;
 using namespace Wt;
