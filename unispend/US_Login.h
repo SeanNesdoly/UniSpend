@@ -23,5 +23,12 @@ public:
     void handleInternalPath(const string &internalPath);
 
 private:
-    void showWorkspace(); // show the main workspace container
+    void btnLogin_Clicked(); // authenticate user and show workspace container
+    WLabel* title;
+    WLabel* lblUser;
+    WLineEdit* txtUser;
+    WLabel* lblPassword;
+    WLineEdit* txtPassword;
+    WPushButton* btnLogin;
+    WLabel* lblError;
 };

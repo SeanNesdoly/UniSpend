@@ -8,48 +8,59 @@
  * CISC 320 Fall 2016
  */
 
-#include <Wt/WText>
-#include <Wt/WPushButton>
-#include <Wt/WStackedWidget>
 #include <Wt/WApplication>
-//#include <Wt/Auth/AuthModel>
-//#include <Wt/Auth/AuthWidget>
+#include <Wt/WStackedWidget>
+#include <Wt/WLabel>
+#include <Wt/WLineEdit>
+#include <Wt/WPushButton>
 
 #include "US_Login.h"
+//#include "userClass.h"
 
 US_Login::US_Login(WContainerWidget *parent):
     WContainerWidget(parent)
 {
     // container setup
-    //WApplication::instance()->setInternalPath("/login");
     setStyleClass("login");
 
     // adding in widgets to the container
-    WText *title = new WText("<h1>UniSpend</h1>");
+    title = new WLabel("<h1>UniSpend</h1>", parent);
     addWidget(title);
 
-    WPushButton *btnShowWorkspace = new WPushButton("Show Workspace");
-    btnShowWorkspace->clicked().connect(this, &US_Login::showWorkspace);
-    addWidget(btnShowWorkspace);
+    // user label and field
+    lblUser = new WLabel("Username:", parent);
+    txtUser = new WLineEdit(parent);
+    lblUser->setBuddy(txtUser);
+    addWidget(lblUser);
+    addWidget(txtUser);
 
-    // TODO: wire up the listener for internal path changes
-    //WApplication::instance()->internalPathChanged().connect(this, &US_Login::handleInternalPath);
+    // password label and field
+    lblPassword = new WLabel("Password:", parent);
+    txtPassword = new WLineEdit(parent);
+    lblPassword->setBuddy(txtPassword);
+    addWidget(lblPassword);
+    addWidget(txtPassword);
 
-    // TODO: Ryan/Yumou
-    // create an authentication widget and add it to the mainStack widget
-    //Auth::AuthModel *authModel = new Auth::AuthModel(params);
-    //Auth::AuthWidget *authWidget = new Auth::AuthWidget(params);
+    // navigation to workspace container
+    btnLogin = new WPushButton("Login");
+    btnLogin->clicked().connect(this, &US_Login::btnLogin_Clicked);
+    addWidget(btnLogin);
+
+    // error label
+    lblError = new WLabel(parent);
+    lblError->hide();
+    addWidget(lblError);
 }
 
-void US_Login::showWorkspace() {
-    WStackedWidget *parent = dynamic_cast<WStackedWidget*>(this->parent());
-    parent->setCurrentIndex(1);
-}
+void US_Login::btnLogin_Clicked() {
+    // TODO: query database for existing user and handle appropriately
+    bool authenticated = true;
 
-void US_Login::handleInternalPath(const string &internalPath) {
-    if (internalPath == "/login") {
-        showWorkspace();
+    if (authenticated) { // successfully authenticated
+        WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
+        parent->setCurrentIndex(1);
     } else {
-        WApplication::instance()->setInternalPath("/login", true);
+        lblError->setText("Invalid username or password");
+        lblError->show();
     }
 }
