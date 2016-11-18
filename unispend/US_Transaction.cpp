@@ -1,10 +1,25 @@
-//
+i/
 // Created by Patrick Gibson on 2016-11-13.
 //
 
 //sudo g++ -Wall -I/usr/local/include -I/usr/local/include/cppconn -o transTest US_Transaction.cpp -L/usr/local/lib -lmysqlcppconn
 #include "US_Transaction.h"
+#include <stdlib.h>
+#include <iostream>
 
+/*
+  Include directly the different
+  headers from cppconn/ and mysql_driver.h + mysql_util.h
+  (and mysql_connection.h). This will reduce your build time!
+*/
+
+#include <driver.h>
+#include <exception.h>
+#include <resultset.h>
+#include <statement.h>
+#include <mysql_connection.h>
+#include <mysql_driver.h>
+#include "string.h"
 US_Transaction::US_Transaction() {}
 
 US_Transaction::US_Transaction(string user, string name, string type, string value, string date, string recurring) {
@@ -61,7 +76,7 @@ int US_Transaction::addTransaction() {
     sql::Connection *con;
     sql::Statement *stmt;
     driver = sql::mysql::get_mysql_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "");
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     string sqlCommand =
@@ -79,7 +94,7 @@ vector<US_Transaction> US_Transaction::getTransaction(const string user){
     sql::ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     vector<US_Transaction> results;
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "");
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `User` = '" +user+ "'");
@@ -102,7 +117,7 @@ vector<US_Transaction> US_Transaction::getTransaction(const string user, const s
     sql::ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     vector<US_Transaction> results;
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "");
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `User` = '" +user+ "' AND `date` >= '"+date+ "' AND `date` < NOW() ");
@@ -124,7 +139,7 @@ vector<US_Transaction> US_Transaction::getTransactionBetween(const string user, 
     sql::ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     vector<US_Transaction> results;
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "");
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `date` > '" +date1+ "' AND `date` < '"+date2+ "' AND `User` = '"+user+"'");
