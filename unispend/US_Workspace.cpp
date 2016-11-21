@@ -13,6 +13,7 @@
 #include <Wt/WText>
 
 #include "US_Workspace.h"
+#include "US_TransactionsGUI.h"
 
 US_Workspace::US_Workspace(WContainerWidget *parent):
     WContainerWidget(parent)
@@ -35,7 +36,9 @@ US_Workspace::US_Workspace(WContainerWidget *parent):
 
     //TODO: NAT replace WText (the 2nd arg) with your generated code classes
     leftMenu->addItem("Overview", new WText("Overview"));
-    leftMenu->addItem("Transactions", new WText("Transactions"));
+    leftMenu->addItem("Transactions", new US_TransactionsGUI(tabsStack));
     leftMenu->addItem("Forecasting", new WText("Forecasting"));
     leftMenu->addItem("Settings", new WText("Settings"));
+	
+	addWidget(tabsStack);
 }
