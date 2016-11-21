@@ -11,7 +11,12 @@
 #pragma once
 
 #include <Wt/WContainerWidget>
-//#include "userClass.h"
+#include <Wt/WApplication>
+#include <Wt/WStackedWidget>
+#include <Wt/WLabel>
+#include <Wt/WLineEdit>
+#include <Wt/WPushButton>
+#include <Wt/WPanel>
 
 using namespace std;
 using namespace Wt;
@@ -25,6 +30,7 @@ public:
 
 private:
     void btnLogin_Clicked(); // authenticate user and show workspace container
+    void btnRegisterUser_Clicked(); // register a new user in the database
     WLabel* title;
     WLabel* lblUser;
     WLineEdit* txtUser;
@@ -32,4 +38,14 @@ private:
     WLineEdit* txtPassword;
     WPushButton* btnLogin;
     WLabel* lblError;
+    WPanel* pnlRegisterUser;
+    WContainerWidget* newUserContainer;
+    WLabel* lblNewUser;
+    WLineEdit* txtNewUser;
+    WLabel* lblNewPassword;
+    WLineEdit* txtNewPassword;
+    WLabel* lblFullName;
+    WLineEdit* txtFullName;
+    WPushButton* btnRegisterUser;
+
 };

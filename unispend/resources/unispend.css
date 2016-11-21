@@ -1,17 +1,24 @@
-.login * {
+body {
     margin-left: 20px;
 }
 
-.login h1 {
-    margin-left: 0px;
+.login * { /* all login elements */
+
 }
 
 .login span {
-    margin-left: 0px;
     display: block;
 }
 
 .login input[type="text"] {
     width: 300px;
     margin-bottom: 20px;
+}
+
+.login button {
+    margin-bottom: 20px;
+}
+
+.register-user {
+    width: 350px;
 }
