@@ -1,0 +1,49 @@
+//
+// Created by Brent on 11/14/2016.
+//
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <vector>
+
+#include "US_Transaction.h"
+using namespace std;
+#ifndef UNISPEND_US_PROJECT_H
+#define UNISPEND_US_PROJECT_H
+
+
+class US_Project {
+public:
+    US_Project(string username, string pName);
+    US_Project(string username, double currentBalance); //main project
+    US_Project(string username, string projectName, double scenarioCost, string startDate, string endDate); //scenario project
+    string getUsername();
+    string getProjectName();
+    int getProjectId();
+    double getCurrentBalance();
+    string getStartDate();
+
+    void setProjectName(string projectName);
+    void setCurrentBalance(double currentBalance);
+    void setRange(int selectedRange);
+
+    vector<US_Transaction> getAllTransactions(string user, string project);
+    vector<US_Transaction> getAllTransactions(string user, string project, string date);
+    vector<US_Transaction> getAllTransactions(string user, string project, string date1, string date2);
+    vector<US_Transaction> getTypeTransactions(string username, string project, string type);
+    void addTransaction(US_Transaction);
+    void deleteTransaction(US_Transaction oldTransaction);
+    double sumAllTransactions(vector<US_Transaction>);
+protected:
+    int projectID;
+    string username;
+    string projectName;
+    double scenarioCost;
+    double currentBalance;
+    string startDate;
+    string targetDate;
+    vector<US_Transaction> transactions;
+};
+
+
+#endif //UNISPEND_US_PROJECT_H
