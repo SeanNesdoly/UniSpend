@@ -8,34 +8,50 @@
  * CISC 320 Fall 2016
  */
 
-#include <Wt/WApplication>
-#include <Wt/WMenu>
-#include <Wt/WText>
-
 #include "US_Workspace.h"
+#include "US_OverviewGUI.h"
+#include "US_ForecastGUI.h"
+#include "US_SettingsGUI.h"
 
 US_Workspace::US_Workspace(WContainerWidget *parent):
     WContainerWidget(parent)
 {
     // container setup
-    //WApplication::instance()->setInternalPath("/workspace");
     setStyleClass("workspace");
 
     // create the navigation bar
-    _navigation = new WNavigationBar(parent);
-    _navigation->setTitle("UniSpend");
-    _navigation->setResponsive(true);
-    addWidget(_navigation);
+    navigationBar = new WNavigationBar();
+    navigationBar->setTitle("UniSpend");
+    navigationBar->setResponsive(true);
+    addWidget(navigationBar);
 
     // create the stacked widget that contains each tab
-    WStackedWidget *tabsStack = new WStackedWidget(parent);
+    tabsStack = new WStackedWidget(parent);
+    addWidget(tabsStack);
 
-    WMenu *leftMenu = new WMenu(tabsStack, parent);
-    _navigation->addMenu(leftMenu);
+    // left aligned menu
+    leftMenu = new WMenu(tabsStack);
+    navigationBar->addMenu(leftMenu);
 
-    //TODO: NAT replace WText (the 2nd arg) with your generated code classes
-    leftMenu->addItem("Overview", new WText("Overview"));
+    // add in the containers for each tab
+    leftMenu->addItem("Overview", new US_OverviewGUI(tabsStack));
     leftMenu->addItem("Transactions", new WText("Transactions"));
-    leftMenu->addItem("Forecasting", new WText("Forecasting"));
-    leftMenu->addItem("Settings", new WText("Settings"));
+    leftMenu->addItem("Forecasting", new US_ForecastGUI(tabsStack));
+    leftMenu->addItem("Settings", new US_SettingsGUI(tabsStack));
+
+    // right alligned menu
+    rightMenu = new WMenu();
+    navigationBar->addMenu(rightMenu, AlignRight);
+
+    // logout onclick widget
+    logout = new WMenuItem("Logout");
+    logout->clicked().connect(this, &US_Workspace::btnLogout_Clicked);
+    rightMenu->addItem(logout);
+
+}
+
+void US_Workspace::btnLogout_Clicked() {
+    WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
+    parent->setCurrentIndex(0); // swap to the US_Login container on the main stack
+    this->clear(); // delete the children of this container
 }
