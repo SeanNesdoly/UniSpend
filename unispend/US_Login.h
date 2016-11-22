@@ -18,6 +18,8 @@
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
 
+#include "US_User.h"
+
 using namespace std;
 using namespace Wt;
 
@@ -37,15 +39,17 @@ private:
     WLabel* lblPassword;
     WLineEdit* txtPassword;
     WPushButton* btnLogin;
-    WLabel* lblError;
     WPanel* pnlRegisterUser;
     WContainerWidget* newUserContainer;
     WLabel* lblNewUser;
     WLineEdit* txtNewUser;
     WLabel* lblNewPassword;
     WLineEdit* txtNewPassword;
-    WLabel* lblFullName;
-    WLineEdit* txtFullName;
+    WLabel* lblFirstName;
+    WLineEdit* txtFirstName;
+    WLabel* lblLastName;
+    WLineEdit* txtLastName;
     WPushButton* btnRegisterUser;
+    WLabel* lblErrors;
 
 };

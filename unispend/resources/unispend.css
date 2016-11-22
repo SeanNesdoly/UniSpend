@@ -22,3 +22,7 @@ body {
 .register-user {
     width: 350px;
 }
+
+.error {
+    color: red;
+}
