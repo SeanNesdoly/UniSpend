@@ -8,24 +8,9 @@
  * CISC 320 Fall 2016
  */
 
-#include <stdlib.h>
 #include <iostream>
 
 #include "US_Login.h"
-
-/*
-  Include directly the different
-  headers from cppconn/ and mysql_driver.h + mysql_util.h
-  (and mysql_connection.h). This will reduce your build time!
-*/
-
-#include <driver.h>
-#include <exception.h>
-#include <resultset.h>
-#include <statement.h>
-#include <mysql_connection.h>
-#include <mysql_driver.h>
-#include "string.h"
 
 US_Login::US_Login(WContainerWidget *parent):
     WContainerWidget(parent)
@@ -34,45 +19,39 @@ US_Login::US_Login(WContainerWidget *parent):
     setStyleClass("login");
 
     // adding in widgets to the container
-    title = new WLabel("<h1>UniSpend</h1>", this);
+    title = new WLabel("<h1>UniSpend</h1>");
     addWidget(title);
 
     // username label & field
-    lblUser = new WLabel("Username:", this);
+    lblUser = new WLabel("Username:");
     txtUser = new WLineEdit(parent);
     lblUser->setBuddy(txtUser);
     addWidget(lblUser);
     addWidget(txtUser);
 
     // password label & field
-    lblPassword = new WLabel("Password:", this);
+    lblPassword = new WLabel("Password:");
     txtPassword = new WLineEdit(parent);
     lblPassword->setBuddy(txtPassword);
     addWidget(lblPassword);
     addWidget(txtPassword);
 
     // navigation to workspace container
-    btnLogin = new WPushButton("Login", this);
+    btnLogin = new WPushButton("Login");
     btnLogin->clicked().connect(this, &US_Login::btnLogin_Clicked);
     addWidget(btnLogin);
 
-    // error label
-    lblError = new WLabel(this);
-    lblError->hide();
-    addWidget(lblError);
-
-
     // Collapsible panel for registering new users
     // ==============================================
-    pnlRegisterUser = new WPanel(this);
+    pnlRegisterUser = new WPanel();
     pnlRegisterUser->setTitle("<strong>New User? Register Here!</strong>");
     pnlRegisterUser->setStyleClass("register-user");
-
     pnlRegisterUser->setCollapsible(true);
     pnlRegisterUser->setCollapsed(true);
+    addWidget(pnlRegisterUser);
 
     // Container for holding fields required for user registration
-    newUserContainer = new WContainerWidget(this);
+    newUserContainer = new WContainerWidget();
     pnlRegisterUser->setCentralWidget(newUserContainer);
 
     // username label & field
@@ -89,74 +68,72 @@ US_Login::US_Login(WContainerWidget *parent):
     newUserContainer->addWidget(lblNewPassword);
     newUserContainer->addWidget(txtNewPassword);
 
-    // full name of user
-    lblFullName = new WLabel("Full Name:", newUserContainer);
-    txtFullName = new WLineEdit(newUserContainer);
-    lblFullName->setBuddy(txtFullName);
-    newUserContainer->addWidget(lblNewPassword);
-    newUserContainer->addWidget(txtNewPassword);
+    // fist name of user
+    lblFirstName = new WLabel("First Name:", newUserContainer);
+    txtFirstName = new WLineEdit(newUserContainer);
+    lblFirstName->setBuddy(txtFirstName);
+    newUserContainer->addWidget(lblFirstName);
+    newUserContainer->addWidget(txtFirstName);
+
+    // last name of user
+    lblLastName = new WLabel("Last Name:", newUserContainer);
+    txtLastName = new WLineEdit(newUserContainer);
+    lblLastName->setBuddy(txtLastName);
+    newUserContainer->addWidget(lblLastName);
+    newUserContainer->addWidget(txtLastName);
 
     // handles registration of user
     btnRegisterUser = new WPushButton("Register", newUserContainer);
     btnRegisterUser->clicked().connect(this, &US_Login::btnRegisterUser_Clicked);
     newUserContainer->addWidget(btnRegisterUser);
+
+    // error label
+    lblErrors = new WLabel();
+    lblErrors->setStyleClass("error");
+    lblErrors->hide();
+    addWidget(lblErrors);
 }
 
 void US_Login::btnLogin_Clicked() {
     // TODO: query database for existing user and handle appropriately
-    bool authenticated = true;
-
-    // Test new user account creation
-    sql::mysql::MySQL_Driver *driver;
-    sql::Connection *con;
-    sql::Statement *stmt;
-
-    driver = sql::mysql::get_mysql_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
-
-    // Try to retrieve results from the users table
     string username = txtUser->displayText().toUTF8();
     string pass = txtPassword->displayText().toUTF8();
-    sql::ResultSet *res;
-    bool userExists = false;
-    stmt = con->createStatement();
-    stmt->execute("USE US_Database");
-    string sqlCommand = "SELECT `username`, `password` FROM `users` WHERE `username` = '" + username + "'";
-    //string sqlCommand = "INSERT INTO `users` (`name`, `password`) VALUES ('" + username + "', '" + pass + "')";
 
-    try
-    {
-        stmt->execute(sqlCommand);
-        stmt->executeQuery(sqlCommand);
-        userExists = false;
+    try {
+        User *user = new User(username, pass);
 
-
-    } catch(sql::SQLException e)
-    {
-        cout << endl << "User with name '" << username << "' already exists"  << endl;
-        cout << "Please enter a new username and try again" << endl;
-        userExists = true;
-    }
-
-    if (userExists == false)
-    {
-        cout << "Successfully created user with name " << username << endl;
-    }
-
-    delete stmt;
-    delete con;
-
-
-    if (authenticated) { // successfully authenticated
+        // reaching this statement denotes an authenticated user
         WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
         parent->setCurrentIndex(1);
         this->clear(); // delete the children of this container
-    } else {
-        lblError->setText("Invalid username or password");
-        lblError->show();
+
+    } catch (UserException &e) {
+        // if an exception is thrown on creation of the user object,
+        // the user is not authenticated!
+        lblErrors->setText(e.what());
+        lblErrors->show();
     }
 }
 
 void US_Login::btnRegisterUser_Clicked() {
     // TODO: insert a new user into the database
+    string username = txtNewUser->displayText().toUTF8();
+    string pass = txtNewPassword->displayText().toUTF8();
+    string fName = txtFirstName->displayText().toUTF8();
+    string lName = txtLastName->displayText().toUTF8();
+
+    try {
+        User *user = new User(username, pass, fName, lName);
+
+        // reaching this statement denotes successful creation of a new user
+        WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
+        parent->setCurrentIndex(1);
+        this->clear(); // delete the children of this container
+
+    } catch (UserException &e) {
+        // if an exception is thrown on creation of the user object,
+        // the user is not authenticated
+        lblErrors->setText(e.what());
+        lblErrors->show();
+    }
 }
