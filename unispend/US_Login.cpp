@@ -18,20 +18,24 @@ US_Login::US_Login(WContainerWidget *parent):
     // container setup
     setStyleClass("login");
 
+    initializeWidgets();
+}
+
+void US_Login::initializeWidgets() {
     // adding in widgets to the container
     title = new WLabel("<h1>UniSpend</h1>");
     addWidget(title);
 
     // username label & field
     lblUser = new WLabel("Username:");
-    txtUser = new WLineEdit(parent);
+    txtUser = new WLineEdit();
     lblUser->setBuddy(txtUser);
     addWidget(lblUser);
     addWidget(txtUser);
 
     // password label & field
     lblPassword = new WLabel("Password:");
-    txtPassword = new WLineEdit(parent);
+    txtPassword = new WLineEdit();
     lblPassword->setBuddy(txtPassword);
     addWidget(lblPassword);
     addWidget(txtPassword);
@@ -95,17 +99,19 @@ US_Login::US_Login(WContainerWidget *parent):
 }
 
 void US_Login::btnLogin_Clicked() {
-    // TODO: query database for existing user and handle appropriately
+    // user authentication logic
     string username = txtUser->displayText().toUTF8();
     string pass = txtPassword->displayText().toUTF8();
 
     try {
-        User *user = new User(username, pass);
+        _user = new User(username, pass);
 
-        // reaching this statement denotes an authenticated user
-        WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
-        parent->setCurrentIndex(1);
-        this->clear(); // delete the children of this container
+        // reaching this statement denotes an authenticated user; create & show the workspace container!
+        root = WApplication::instance()->root();
+        this->clear(); // delete and clean up the children of this container
+        root->removeWidget(this);
+        US_Workspace *workspaceContainer = new US_Workspace(root, _user);
+        root->addWidget(workspaceContainer);
 
     } catch (UserException &e) {
         // if an exception is thrown on creation of the user object,
@@ -116,19 +122,21 @@ void US_Login::btnLogin_Clicked() {
 }
 
 void US_Login::btnRegisterUser_Clicked() {
-    // TODO: insert a new user into the database
+    // insert a new user into the database and show the workspace container
     string username = txtNewUser->displayText().toUTF8();
     string pass = txtNewPassword->displayText().toUTF8();
     string fName = txtFirstName->displayText().toUTF8();
     string lName = txtLastName->displayText().toUTF8();
 
     try {
-        User *user = new User(username, pass, fName, lName);
+        _user = new User(username, pass, fName, lName);
 
-        // reaching this statement denotes successful creation of a new user
-        WStackedWidget *parent = dynamic_cast<WStackedWidget *>(this->parent());
-        parent->setCurrentIndex(1);
-        this->clear(); // delete the children of this container
+        // reaching this statement denotes an authenticated user; create & show the workspace container!
+        root = WApplication::instance()->root();
+        this->clear(); // delete and clean up the children of this container
+        root->removeWidget(this);
+        US_Workspace *workspaceContainer = new US_Workspace(root, _user);
+        root->addWidget(workspaceContainer);
 
     } catch (UserException &e) {
         // if an exception is thrown on creation of the user object,

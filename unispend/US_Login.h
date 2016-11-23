@@ -19,6 +19,7 @@
 #include <Wt/WPanel>
 
 #include "US_User.h"
+#include "US_Workspace.h"
 
 using namespace std;
 using namespace Wt;
@@ -31,8 +32,13 @@ public:
     void handleInternalPath(const string &internalPath);
 
 private:
+    void initializeWidgets();
     void btnLogin_Clicked(); // authenticate user and show workspace container
     void btnRegisterUser_Clicked(); // register a new user in the database
+
+    WContainerWidget* root; // application root
+    User *_user; // authenticated user persisted throughout the application session
+
     WLabel* title;
     WLabel* lblUser;
     WLineEdit* txtUser;

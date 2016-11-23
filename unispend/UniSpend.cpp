@@ -36,15 +36,15 @@ WApplication *createApplication(const WEnvironment& env) {
     WStackedWidget *mainStack = new WStackedWidget();
 
     // Create the login container
-    US_Login *loginContainer = new US_Login(mainStack);
-    mainStack->addWidget(loginContainer);
+    US_Login *loginContainer = new US_Login(app->root());
+    //mainStack->addWidget(loginContainer);
 
     // Create the workspace container
-    US_Workspace *workspaceContainer = new US_Workspace(mainStack);
-    mainStack->addWidget(workspaceContainer);
+    //US_Workspace *workspaceContainer = new US_Workspace(mainStack);
+    //mainStack->addWidget(workspaceContainer);
 
     // add the main stack widget to the root page
-    app->root()->addWidget(mainStack);
+    app->root()->addWidget(loginContainer);
 
     return app;
 }
