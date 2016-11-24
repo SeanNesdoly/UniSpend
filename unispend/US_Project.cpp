@@ -27,18 +27,65 @@ US_Project::US_Project(string username, string pName){
     sql::Connection *con;
     sql::Statement *stmt;
     sql::ResultSet *res;
+    sql::ResultSet *res2;
     driver = sql::mysql::get_mysql_driver_instance();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
+
     res = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = '"+pName+"'");
+    res2 = stmt->executeQuery("SELECT EXTRACT(MONTH FROM NOW())");
+    res->next();
+    res = stmt->executeQuery("SELECT EXTRACT(MONTH FROM '"+res->getString("lastLogin")+"')");
+    res2->next();
+    res->next();
+
+    // if last login month != current month then reset monthly allowance and add leftover money to leftovers
+    if(res->getString(1) != res2->getString(1) && pName == "main"){// res holds the month of a users last login and res2 holds the current month
+    	cout << "test" << endl;
+    	res = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = '"+pName+"'");
+        res->next();
+        double yearBalance = res->getDouble("yearBalance");
+    	double currMonthlyAllowance = res->getDouble("monthlyAllowance");
+        double currLeftover = res->getDouble("leftover");
+        double newLeftover = currLeftover + currMonthlyAllowance;
+
+    	res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, '"+res->getString("startDate")+"', '2017-04-30')"); // 2017-04-30 is hard coded as last day of school for the purpose of simplicity
+    	res->next();
+        double monthly = yearBalance/res->getInt(1);
+
+        std::ostringstream monthlyStr;
+        std::ostringstream leftoverStr;
+        monthlyStr << monthly;
+        leftoverStr << newLeftover; //use the string stream just like cout, except the stream prints not to stdout but to a string
+        std::string monthlyBalance = monthlyStr.str();
+        std::string leftoverBalance = leftoverStr.str();
+        cout << leftoverBalance << endl;
+     	// convert monthly and newLeftover to string then add to update
+        string sqlCommand ="UPDATE projects SET monthlyAllowance = " + monthlyBalance + " WHERE projectName = '"+pName+"' AND username ='"+username+"'";
+        stmt->execute(sqlCommand);
+        sqlCommand ="UPDATE projects SET leftover = " + leftoverBalance + " WHERE projectName = '"+pName+"' AND username ='"+username+"'";
+        stmt->execute(sqlCommand);
+        sqlCommand ="UPDATE projects SET lastLogin = NOW() WHERE projectName = '"+pName+"' AND username ='"+username+"'";
+	stmt->execute(sqlCommand);
+    }else{
+    	string sqlCommand = "UPDATE projects SET lastLogin = NOW() WHERE projectName = '"+projectName+"' AND username ='"+username+"'";
+    }
+    res = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = '"+pName+"'");
+    res2 = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = 'main'");
+    res2->next();
     res->next();
     this->username = username;
     this->projectName = res->getString("projectName");
     this->currentBalance = res->getDouble("currentBalance");
+    this->yearBalance = res->getDouble("yearBalance");
+    this->monthlyAllowance = res->getDouble("monthlyAllowance");
+    this->leftover = res2->getDouble("leftover");
     this->scenarioCost = res->getDouble("scenarioCost");
     this->startDate = res->getString("startDate");
     this->targetDate = res->getString("targetDate");
+    this->id = res->getInt("ID");
+    delete res2;
     delete res;
     delete con;
     delete stmt;
@@ -51,15 +98,23 @@ US_Project::US_Project(string username, double currentBalance){
     sql :: mysql :: MySQL_Driver *driver;
     sql :: Connection *con;
     sql :: Statement *stmt;
+    sql :: ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, NOW(), '2017-04-30')");
+    res->next();
+    double monthly = currentBalance/res->getInt(1); // in the future this will be changed to allow a user to set theirown period
+    cout << monthly << endl;
+    std::ostringstream monthlyStr;
     std::ostringstream balanceStr;
-    balanceStr << currentBalance; //use the string stream just like cout, except the stream prints not to stdout but to a string.
+    monthlyStr << monthly;
+    balanceStr << currentBalance; //use the string stream just like cout, except the stream prints not to stdout but to a string
+    std::string monthlyBalance = monthlyStr.str();
     std::string balance = balanceStr.str();
-    
-    string sqlCommand = "INSERT INTO `projects` (`username`, `projectName`, `currentBalance`) VALUES ('" + username + "', 'main', '" + balance + "')";
+
+    string sqlCommand = "INSERT INTO `projects` (`username`, `projectName`, `currentBalance`, `lastLogin`, `startDate`, `targetDate`, `yearBalance`, `monthlyAllowance`, `leftover`) VALUES ('" + username + "', 'main', '" + balance + "', NOW() , NOW() , '2017-04-30', '" + balance + "','"+monthlyBalance+ "', '0')";
     // if user attempts to input an ID that already exists the SQLException
     // error will be caught and the user will be asked to try again
     //try{
@@ -69,13 +124,18 @@ US_Project::US_Project(string username, double currentBalance){
       // }catch(sql::SQLException e) {
         //cout << endl << "The ID is already in use" << endl;
     //}
+
     this->projectName = "main";
     this->username = username;
     this->currentBalance = currentBalance;
+    this->monthlyAllowance = monthly;
+    delete res;
+    delete con;
+    delete stmt;
 
 }
 // constructor for scenario project.
-US_Project::US_Project(string username, string projectName, double scenarioCost, string startDate, string targetDate){
+US_Project::US_Project(string username, string projectName, double scenarioCost, string targetDate){
     sql :: mysql :: MySQL_Driver *driver;
     sql :: Connection *con;
     sql :: Statement *stmt;
@@ -86,29 +146,30 @@ US_Project::US_Project(string username, string projectName, double scenarioCost,
     stmt->execute("USE US_Database");
     res = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = 'main'"); // finds the current balance of a users main project
     res->next();
-    double currBalance = res->getDouble("currentBalance");
-    std::ostringstream sBalance;
+    double currLeftover = res->getDouble("leftover");
+    std::ostringstream sLeftover;
     std::ostringstream scenCost;
-    sBalance << currBalance;
+    sLeftover << currLeftover;
     scenCost << scenarioCost;
-    std::string sBalanceStr = sBalance.str();
+    std::string sLeftoverStr = sLeftover.str();
     std::string scenCostStr = scenCost.str();
 
-    string sqlCommand = "INSERT INTO `projects` (`username`, `projectName`, `currentBalance`, `scenarioCost`, `startDate`, `targetDate`) VALUES ('" + username + "', '" + projectName + "', '"+ sBalanceStr +"','"+scenCostStr+"','"+startDate+"','"+targetDate+ "')";
+    string sqlCommand = "INSERT INTO `projects` (`username`, `projectName`, `scenarioCost`, `lastLogin`, `startDate`, `targetDate`, `leftover`) VALUES ('" + username + "', '" + projectName +"','"+scenCostStr+"', NOW(), NOW(),'"+targetDate+ "','"+sLeftoverStr+ "')";
     // if user attempts to input an ID that already exists the SQLException
     // error will be caught and the user will be asked to try again
-    try{
-        stmt->execute(sqlCommand);
-    
-    }catch(sql::SQLException e) {
-        cout << endl << "The ID is already in use" << endl;
-    }
+
+    stmt->execute(sqlCommand);
+
     this->username = username;
     this->projectName = projectName;
-    this->currentBalance = currBalance;
-    this->startDate = startDate;
+    this->leftover = currLeftover;
+    this->startDate = res->getString("lastLogin");
     this->targetDate = targetDate;
     this->scenarioCost = scenarioCost;
+
+    delete res;
+    delete con;
+    delete stmt;
 }
 
 
@@ -127,7 +188,26 @@ bool US_Project::isScenario() {
 }
 */
 
+// Given a set a set of transactions this method will return the average amount spent per day from the projects start date till present.
+double US_Project::getAverage(vector<US_Transaction> transactionsList){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +startDate+ "')");
+    res->next();
+    double sum = this->sumAllTransactions(transactionsList);
+    double average = sum/res->getDouble(1);
+    return average;
+
+}
+
 // method used to add a single transaction. adds to the transaction vector of the current project aswell as the SQL DB.
+// when impllementing addTransaction we need to check if their are any existing projects for the user. if there is then we need to add transaction to main then add transaction to the project(s). 
 void US_Project::addTransaction(US_Transaction newTransaction){
     sql :: mysql :: MySQL_Driver *driver;
     sql :: Connection *con;
@@ -152,16 +232,31 @@ void US_Project::addTransaction(US_Transaction newTransaction){
        }catch(sql::SQLException e){
        cout << endl << "The ID is already in use please input a different id" << endl;
     }
-    double newBalance = currentBalance - newTransaction.getValue();
+    // if project is main updat currentBalance and monthlyAllowance as a result of the new transaction 
+    // if it's a scenario (not main) then just add the transaction to the scenario transaction vector.
+    if(projectName == "main"){
+    	double newBalance = currentBalance - newTransaction.getValue();
+    	double newMonthlyAllowance = monthlyAllowance - newTransaction.getValue();
+    
+   	std::ostringstream nMA; //new monthly Allowance
+    	std::ostringstream Nb;
+    	nMA << newMonthlyAllowance;
+    	Nb << newBalance;
+    	std::string nMAStr = nMA.str();
+    	std::string Nbstr = Nb.str();
 
-    std::ostringstream Nb;
-    Nb << newBalance;
-    std::string Nbstr = Nb.str();
+    	sqlCommand ="UPDATE projects SET currentBalance = " + Nbstr + " WHERE projectName = 'main'";// change to also include username check
+    	stmt->execute(sqlCommand);
 
-    sqlCommand ="UPDATE projects SET currentBalance = " + Nbstr + " WHERE projectName = '"+projectName+"'";
-    stmt->execute(sqlCommand);
+    	sqlCommand ="UPDATE projects SET monthlyAllowance = " + nMAStr + " WHERE projectName = 'main'";
+    	stmt->execute(sqlCommand);
+
+    	this->currentBalance = newBalance; // adds the value of the transaction to the current balance
+    	this->monthlyAllowance = newMonthlyAllowance;
+    }
     this->transactions.insert(this->transactions.end(), newTransaction); // inserts the transaction at the end of vector
-    this->currentBalance = newBalance; // adds the value of the transaction to the current balance
+    delete con;
+    delete stmt;
 }
 
 
@@ -285,8 +380,8 @@ double US_Project::sumAllTransactions(vector<US_Transaction> transactionList){
 /*
  * Getters
  */
-int US_Project::getProjectId(){
-    return projectID;
+int US_Project::getId(){
+    return id;
 }
 
 string US_Project::getProjectName(){
@@ -303,6 +398,22 @@ double US_Project::getCurrentBalance() {
 
 string US_Project::getStartDate() {
     return startDate;
+}
+
+double US_Project::getMonthlyAllowance(){
+    return monthlyAllowance;
+}
+
+double US_Project::getYearBalance(){
+    return yearBalance;
+}
+
+double US_Project::getLeftover(){
+    return leftover;
+}
+
+double US_Project::getScenarioCost(){
+    return scenarioCost;
 }
 
 /*

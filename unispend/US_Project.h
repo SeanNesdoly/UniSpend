@@ -16,12 +16,17 @@ class US_Project {
 public:
     US_Project(string username, string pName);
     US_Project(string username, double currentBalance); //main project
-    US_Project(string username, string projectName, double scenarioCost, string startDate, string endDate); //scenario project
+    US_Project(string username, string projectName, double scenarioCost, string endDate); //scenario project
+    
     string getUsername();
     string getProjectName();
-    int getProjectId();
+    int getId();
     double getCurrentBalance();
     string getStartDate();
+    double getMonthlyAllowance();
+    double getYearBalance();
+    double getLeftover();
+    double getScenarioCost();
 
     void setProjectName(string projectName);
     void setCurrentBalance(double currentBalance);
@@ -34,12 +39,16 @@ public:
     void addTransaction(US_Transaction);
     void deleteTransaction(US_Transaction oldTransaction);
     double sumAllTransactions(vector<US_Transaction>);
+    double getAverage(vector<US_Transaction>);
 protected:
-    int projectID;
+    int id;
     string username;
     string projectName;
     double scenarioCost;
     double currentBalance;
+    double yearBalance;
+    double monthlyAllowance;
+    double leftover;
     string startDate;
     string targetDate;
     vector<US_Transaction> transactions;
