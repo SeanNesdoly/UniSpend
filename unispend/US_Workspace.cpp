@@ -23,12 +23,12 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
 
     // create the navigation bar
     navigationBar = new WNavigationBar();
-    navigationBar->setTitle("UniSpend");
+    navigationBar->setTitle("UniSpend"); // TODO: add in project name
     navigationBar->setResponsive(true);
     addWidget(navigationBar);
 
     // create the stacked widget that contains each tab
-    tabsStack = new WStackedWidget(parent);
+    tabsStack = new WStackedWidget();
     addWidget(tabsStack);
 
     // left aligned menu
@@ -36,10 +36,10 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
     navigationBar->addMenu(leftMenu);
 
     // add in the containers for each tab
-    leftMenu->addItem("Overview", new US_OverviewGUI(tabsStack));
+    leftMenu->addItem("Overview", new US_OverviewGUI(this));
     leftMenu->addItem("Transactions", new WText("Transactions"));
-    leftMenu->addItem("Forecasting", new US_ForecastGUI(tabsStack));
-    leftMenu->addItem("Settings", new US_SettingsGUI(tabsStack));
+    leftMenu->addItem("Forecasting", new US_ForecastGUI(this));
+    leftMenu->addItem("Settings", new US_SettingsGUI(this));
 
     // right aligned menu
     rightMenu = new WMenu();

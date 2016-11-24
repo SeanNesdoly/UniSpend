@@ -1,28 +1,68 @@
-body {
-    margin-left: 20px;
+/* Login Container */
+.login  { /* all login elements */
+    padding-left: 20px;
 }
 
-.login * { /* all login elements */
-
-}
-
-.login span {
+.login span { /* login WLabel */
     display: block;
 }
 
-.login input[type="text"] {
+.login input[type="text"] { /* login WLineEdit */
     width: 300px;
     margin-bottom: 20px;
 }
 
-.login button {
+.login button { /* login WPushButton */
     margin-bottom: 20px;
 }
 
-.register-user {
+.register-user { /* register user container on Login container*/
     width: 350px;
 }
 
 .error {
     color: red;
+}
+
+/* Overview Tab */
+.overview {
+
+}
+
+/* Transactions Tab */
+.transaction {
+
+}
+
+/* Forecasting Tab */
+.forecasting {
+    padding-left: 20px;
+}
+
+.forecasting fieldset {
+    padding-right: 50px;
+}
+
+.forecasting select { /* drop down */
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+.forecasting input[type="text"] {
+    width: 300px;
+    margin-bottom: 10px;
+}
+
+/* Settings Tab */
+.settings {
+    padding-left: 20px;
+}
+
+.settings fieldset { /* settings WGroupBox */
+    padding-right: 50px;
+}
+
+.settings input[type="text"] { /* settings WLineEdit */
+    width: 300px;
+    margin-bottom: 20px;
 }
