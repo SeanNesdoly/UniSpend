@@ -12,6 +12,7 @@
 #include "US_OverviewGUI.h"
 #include "US_ForecastGUI.h"
 #include "US_SettingsGUI.h"
+#include "US_TransactionsGUI.h"
 
 US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
     WContainerWidget(parent)
@@ -37,7 +38,7 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
 
     // add in the containers for each tab
     leftMenu->addItem("Overview", new US_OverviewGUI(this));
-    leftMenu->addItem("Transactions", new WText("Transactions"));
+    leftMenu->addItem("Transactions", new US_TransactionsGUI(this));
     leftMenu->addItem("Forecasting", new US_ForecastGUI(this));
     leftMenu->addItem("Settings", new US_SettingsGUI(this));
 
