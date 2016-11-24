@@ -18,6 +18,7 @@
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
 
+
 using namespace std;
 using namespace Wt;
 
@@ -33,9 +34,10 @@ private:
 	void btnEdit_Clicked();
 	
 	WLabel* title;
+	WLabel* test;
 	WLabel* lblError;
 	WPushButton* btnAdd;
 	WPushButton* btnEdit;
 	WContainerWidget* newUserContainer;
-	
+	WTable* table;
 };
