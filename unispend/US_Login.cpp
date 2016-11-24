@@ -23,6 +23,9 @@ US_Login::US_Login(WContainerWidget *parent):
 
 void US_Login::initializeWidgets() {
     // adding in widgets to the container
+    imgUnispend = new WImage("resources/logo_unispend.png");
+    addWidget(imgUnispend);
+
     title = new WLabel("<h1>UniSpend</h1>");
     addWidget(title);
 
@@ -36,6 +39,7 @@ void US_Login::initializeWidgets() {
     // password label & field
     lblPassword = new WLabel("Password:");
     txtPassword = new WLineEdit();
+    txtPassword->setEchoMode(WLineEdit::EchoMode::Password);
     lblPassword->setBuddy(txtPassword);
     addWidget(lblPassword);
     addWidget(txtPassword);

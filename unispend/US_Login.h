@@ -17,6 +17,7 @@
 #include <Wt/WLineEdit>
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
+#include <Wt/WImage>
 
 #include "US_User.h"
 #include "US_Workspace.h"
@@ -39,6 +40,7 @@ private:
     WContainerWidget* root; // application root
     User *_user; // authenticated user persisted throughout the application session
 
+    WImage* imgUnispend;
     WLabel* title;
     WLabel* lblUser;
     WLineEdit* txtUser;

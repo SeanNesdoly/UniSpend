@@ -9,7 +9,6 @@
  */
 
 #include "US_SettingsGUI.h"
-#include <string>
 
 US_SettingsGUI::US_SettingsGUI(WContainerWidget *parent):
         WContainerWidget(parent)
@@ -19,25 +18,24 @@ US_SettingsGUI::US_SettingsGUI(WContainerWidget *parent):
     this->setLayout(hbox);
 
 
-
-    // Project-level Settings
-    // =======================
-    projectSettings = new WGroupBox("Project Settings");
-    hbox->addWidget(projectSettings, 1);
+    // Project-level Settings Section
+    // ===============================
+    boxProjectSettings = new WGroupBox("Project Settings");
+    hbox->addWidget(boxProjectSettings, 0);
 
     // project name
     lblProjectName = new WLabel("Project Name:");
     txtProjectName = new WLineEdit();
     lblProjectName->setBuddy(txtProjectName);
-    projectSettings->addWidget(lblProjectName);
-    projectSettings->addWidget(txtProjectName);
+    boxProjectSettings->addWidget(lblProjectName);
+    boxProjectSettings->addWidget(txtProjectName);
 
     // main project starting balance
     lblStartBalance = new WLabel("Starting Balance:");
     txtStartBalance = new WLineEdit();
     lblStartBalance->setBuddy(txtStartBalance);
-    projectSettings->addWidget(lblStartBalance);
-    projectSettings->addWidget(txtStartBalance);
+    boxProjectSettings->addWidget(lblStartBalance);
+    boxProjectSettings->addWidget(txtStartBalance);
 
     // project start date label & editor
     lblStartDate = new WLabel("Project Start Date:");
@@ -45,60 +43,120 @@ US_SettingsGUI::US_SettingsGUI(WContainerWidget *parent):
     deStartDate->setFormat("yyyy-MM-dd");
     deStartDate->setDate(WDate::currentServerDate()); // TODO: from database
     lblStartDate->setBuddy(deStartDate);
-    projectSettings->addWidget(lblStartDate);
-    projectSettings->addWidget(deStartDate);
+    boxProjectSettings->addWidget(lblStartDate);
+    boxProjectSettings->addWidget(deStartDate);
 
     // save project settings
     btnSaveProjectSettings = new WPushButton("Save Project Settings");
     btnSaveProjectSettings->clicked().connect(this, &US_SettingsGUI::btnSaveProjectSettings_Click);
-    projectSettings->addWidget(btnSaveProjectSettings);
+    boxProjectSettings->addWidget(btnSaveProjectSettings);
+
+    // user feedback on project settings
+    lblMsgProject = new WLabel();
+    boxProjectSettings->addWidget(lblMsgProject);
 
 
-    // User-level Settings
-    // ====================
-    userSettings = new WGroupBox("User Settings");
-    hbox->addWidget(userSettings);
+
+    // Recurring Transactions Section
+    // ==================================
+    boxRecurringCosts = new WGroupBox("Recurring Transactions");
+    hbox->addWidget(boxRecurringCosts, 1);
+
+    // Repeating Transactions Table
+    tblRecurringCosts = new WTableView();
+    tblRecurringCosts->setAlternatingRowColors(true);
+    tblRecurringCosts->setSelectionMode(Wt::SingleSelection);
+    boxRecurringCosts->addWidget(tblRecurringCosts);
+
+
+
+
+    // User-level Settings Section
+    // =============================
+    boxUserSettings = new WGroupBox("User Settings");
+    hbox->addWidget(boxUserSettings);
 
     // password label & field
-    lblPassword = new WLabel("Password:");
+    lblPassword = new WLabel("New Password:");
     txtPassword = new WLineEdit();
-
+    txtPassword->setEchoMode(WLineEdit::EchoMode::Password);
     lblPassword->setBuddy(txtPassword);
-    userSettings->addWidget(lblPassword);
-    userSettings->addWidget(txtPassword);
+    boxUserSettings->addWidget(lblPassword);
+    boxUserSettings->addWidget(txtPassword);
+
+    // confirmation of new password
+    lblConfirmPassword = new WLabel("Confirm New Password:");
+    txtConfirmPassword = new WLineEdit();
+    txtConfirmPassword->setEchoMode(WLineEdit::EchoMode::Password);
+    lblConfirmPassword->setBuddy(txtConfirmPassword);
+    boxUserSettings->addWidget(lblConfirmPassword);
+    boxUserSettings->addWidget(txtConfirmPassword);
 
     // fist name of user
     lblFirstName = new WLabel("First Name:");
     txtFirstName = new WLineEdit();
     lblFirstName->setBuddy(txtFirstName);
-    userSettings->addWidget(lblFirstName);
-    userSettings->addWidget(txtFirstName);
+    boxUserSettings->addWidget(lblFirstName);
+    boxUserSettings->addWidget(txtFirstName);
 
     // last name of user
     lblLastName = new WLabel("Last Name:");
     txtLastName = new WLineEdit();
     lblLastName->setBuddy(txtLastName);
-    userSettings->addWidget(lblLastName);
-    userSettings->addWidget(txtLastName);
+    boxUserSettings->addWidget(lblLastName);
+    boxUserSettings->addWidget(txtLastName);
 
     // save user settings
     btnSaveUserSettings = new WPushButton("Save User Settings");
     btnSaveUserSettings->clicked().connect(this, &US_SettingsGUI::btnSaveUserSettings_Click);
-    userSettings->addWidget(btnSaveUserSettings);
+    boxUserSettings->addWidget(btnSaveUserSettings);
+
+    // user feedback on user settings
+    lblMsgUser = new WLabel();
+    boxUserSettings->addWidget(lblMsgUser);
 }
 
 // event listener to save currently set project settings
 void US_SettingsGUI::btnSaveProjectSettings_Click() {
     // TODO: insert into database
     string projectName = txtProjectName->text().toUTF8();
+
+    // parse starting balance from widget
+    double startingBalance;
+    try {
+        string strStartingBalance = txtStartBalance->text().toUTF8();
+        startingBalance = boost::lexical_cast<double>(strStartingBalance);
+    } catch(std::exception &e) {
+        lblMsgProject->setText("Starting Balance must be a number!");
+        lblMsgProject->setStyleClass("error");
+        return;
+    }
+
     WDate date = deStartDate->date();
+
+    lblMsgProject->setText("Success!");
+    lblMsgProject->setStyleClass("message");
 
 }
 
 // event listener to save currently set user settings
 void US_SettingsGUI::btnSaveUserSettings_Click() {
     // TODO: insert into database
+    bool failure = false;
+
     string pass = txtPassword->text().toUTF8();
+    string confirmPass = txtConfirmPassword->text().toUTF8();
+    if (pass != confirmPass) {
+        lblMsgUser->setText("Passwords do not match!");
+        lblMsgUser->setStyleClass("error");
+        failure = true;
+    }
+
     string fName = txtFirstName->text().toUTF8();
     string lName = txtLastName->text().toUTF8();
+
+    if (!failure) {
+        lblMsgUser->setText("Success!");
+        lblMsgUser->setStyleClass("message");
+    }
 }

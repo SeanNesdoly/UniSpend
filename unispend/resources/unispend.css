@@ -1,27 +1,52 @@
+.error {
+    color: red;
+    display: block;
+}
+
+.message {
+    color: blue;
+    display: block
+}
+
+input[type="password"] {
+    width: 300px;
+    margin-bottom: 20px;
+}
+
 /* Login Container */
 .login  { /* all login elements */
     padding-left: 20px;
 }
 
-.login span { /* login WLabel */
+.login span { /* WLabel */
     display: block;
 }
 
-.login input[type="text"] { /* login WLineEdit */
+.login img {
+    display: block;
+    float: left;
+    margin-right: 10px;
+
+}
+
+.login h1 {
+    display: block;
+    margin-bottom: 25px;
+    margin-top: 20px;
+
+}
+
+.login input[type="text"] { /* WLineEdit */
     width: 300px;
     margin-bottom: 20px;
 }
 
-.login button { /* login WPushButton */
+.login button { /* WPushButton */
     margin-bottom: 20px;
 }
 
-.register-user { /* register user container on Login container*/
+.register-user { /* register user container */
     width: 350px;
-}
-
-.error {
-    color: red;
 }
 
 /* Overview Tab */
@@ -39,18 +64,23 @@
     padding-left: 20px;
 }
 
-.forecasting fieldset {
+.forecasting fieldset { /* WGroupBox */
     padding-right: 50px;
+    margin-bottom: 50px;
 }
 
-.forecasting select { /* drop down */
+.forecasting select { /* WComboBox */
     width: 300px;
     margin-bottom: 10px;
 }
 
-.forecasting input[type="text"] {
+.forecasting input[type="text"] { /* WLineEdit */
     width: 300px;
     margin-bottom: 10px;
+}
+
+.forecasting button { /* WPushButton */
+    margin-top: 10px;
 }
 
 /* Settings Tab */
@@ -58,11 +88,11 @@
     padding-left: 20px;
 }
 
-.settings fieldset { /* settings WGroupBox */
+.settings fieldset { /*  WGroupBox */
     padding-right: 50px;
 }
 
-.settings input[type="text"] { /* settings WLineEdit */
+.settings input[type="text"] { /* WLineEdit */
     width: 300px;
     margin-bottom: 20px;
 }

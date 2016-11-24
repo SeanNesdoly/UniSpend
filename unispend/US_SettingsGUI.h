@@ -18,6 +18,7 @@
 #include <Wt/WPushButton>
 #include <Wt/WLabel>
 #include <Wt/WLineEdit>
+#include <Wt/WTableView>
 
 #include <string>
 
@@ -34,7 +35,7 @@ private:
     WHBoxLayout* hbox;
 
     // Project Settings
-    WGroupBox* projectSettings;
+    WGroupBox* boxProjectSettings;
     WLabel* lblProjectName;
     WLineEdit* txtProjectName;
     WLabel* lblStartBalance;
@@ -42,14 +43,22 @@ private:
     WLabel* lblStartDate;
     WDateEdit* deStartDate;
     WPushButton* btnSaveProjectSettings;
+    WLabel* lblMsgProject; // feedback for project settings
+
+    // Recurring Transactions
+    WGroupBox* boxRecurringCosts;
+    WTableView* tblRecurringCosts;
 
     // User Settings
-    WGroupBox* userSettings;
+    WGroupBox* boxUserSettings;
     WLabel* lblPassword;
     WLineEdit* txtPassword;
+    WLabel* lblConfirmPassword;
+    WLineEdit* txtConfirmPassword;
     WLabel* lblFirstName;
     WLineEdit* txtFirstName;
     WLabel* lblLastName;
     WLineEdit* txtLastName;
     WPushButton* btnSaveUserSettings;
+    WLabel* lblMsgUser; // feedback for user settings
 };
