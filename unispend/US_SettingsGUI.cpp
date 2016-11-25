@@ -10,9 +10,11 @@
 
 #include "US_SettingsGUI.h"
 
-US_SettingsGUI::US_SettingsGUI(WContainerWidget *parent):
-        WContainerWidget(parent)
+US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 {
+    // retrieve the global user object from the parent workspace container
+    _user = parent->user;
+
     setStyleClass("settings");
     hbox = new WHBoxLayout();
     this->setLayout(hbox);

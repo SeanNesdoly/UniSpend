@@ -17,6 +17,8 @@
 #include <Wt/WMenu>
 #include <Wt/WMenuItem>
 #include <Wt/WText>
+#include <Wt/WStandardItemModel>
+#include <Wt/WStandardItem>
 
 #include "US_Login.h"
 #include "US_User.h"
@@ -27,11 +29,13 @@ class US_Workspace : public WContainerWidget
 {
 public:
     US_Workspace(WContainerWidget *parent, User *user);
-    User *_user; // authenticated user persisted throughout the application session
+    User *user; // authenticated user persisted throughout the application session
 private:
     void btnLogout_Clicked(); // logout of the application; swap to the login stack container
 
-    WContainerWidget* root;
+    WContainerWidget* root; // root widget of the application
+
+    WStandardItemModel* modelData;
 
     WNavigationBar *navigationBar; // navigation bar
     WStackedWidget *tabsStack; // show content based on currently selected tab

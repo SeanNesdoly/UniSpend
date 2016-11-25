@@ -21,14 +21,18 @@
 #include <Wt/WTableView>
 
 #include <string>
+#include "US_Workspace.h"
+#include "US_User.h"
 
 using namespace Wt;
 using namespace std;
 
 class US_SettingsGUI : public WContainerWidget {
 public:
-    US_SettingsGUI(WContainerWidget *parent);
+    US_SettingsGUI(US_Workspace *parent);
 private:
+    User* _user;
+
     void btnSaveProjectSettings_Click();
     void btnSaveUserSettings_Click();
 

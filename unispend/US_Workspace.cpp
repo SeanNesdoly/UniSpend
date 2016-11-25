@@ -17,7 +17,16 @@
 US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
     WContainerWidget(parent)
 {
-    _user = user; // persisting user across containers
+    user = user; // persisting user across containers
+
+    int numTransactions = 3;
+    int numCols = 5;
+    modelData = new WStandardItemModel(numTransactions, numCols, this);
+    for (int row = 0; row < numTransactions; row++) {
+        for (int col = 0; col < numCols; col++) {
+            WStandardItem *item = new WStandardItem();
+        }
+    }
 
     // container setup
     setStyleClass("workspace");
