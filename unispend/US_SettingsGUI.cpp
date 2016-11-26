@@ -14,12 +14,16 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 {
     // retrieve the global user object from the parent workspace container
     _user = parent->user;
+    if (_user != nullptr)
+        cout << _user->getName() << "settings";
+    else
+        cout << "FAIL YA SHAT settings";
 
     setStyleClass("settings");
     hbox = new WHBoxLayout();
     this->setLayout(hbox);
 
-
+    // ===============================
     // Project-level Settings Section
     // ===============================
     boxProjectSettings = new WGroupBox("Project Settings");
@@ -58,7 +62,7 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxProjectSettings->addWidget(lblMsgProject);
 
 
-
+    // ==================================
     // Recurring Transactions Section
     // ==================================
     boxRecurringCosts = new WGroupBox("Recurring Transactions");
@@ -68,11 +72,12 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     tblRecurringCosts = new WTableView();
     tblRecurringCosts->setAlternatingRowColors(true);
     tblRecurringCosts->setSelectionMode(Wt::SingleSelection);
+    tblRecurringCosts->setModel(parent->modelTransactionData);
+
     boxRecurringCosts->addWidget(tblRecurringCosts);
 
 
-
-
+    // =============================
     // User-level Settings Section
     // =============================
     boxUserSettings = new WGroupBox("User Settings");

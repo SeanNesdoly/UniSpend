@@ -33,13 +33,14 @@ public:
     void handleInternalPath(const string &internalPath);
 
 private:
+    WContainerWidget* root; // application root
+    User *_user; // authenticated user persisted throughout the application session
+
     void initializeWidgets();
     void btnLogin_Clicked(); // authenticate user and show workspace container
     void btnRegisterUser_Clicked(); // register a new user in the database
 
-    WContainerWidget* root; // application root
-    User *_user; // authenticated user persisted throughout the application session
-
+    // WIDGETS
     WImage* imgUnispend;
     WLabel* title;
     WLabel* lblUser;

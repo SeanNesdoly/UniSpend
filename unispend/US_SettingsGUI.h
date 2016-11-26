@@ -33,9 +33,11 @@ public:
 private:
     User* _user;
 
+    // event handlers
     void btnSaveProjectSettings_Click();
     void btnSaveUserSettings_Click();
 
+    // WIDGETS
     WHBoxLayout* hbox;
 
     // Project Settings

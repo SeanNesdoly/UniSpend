@@ -25,8 +25,9 @@ using namespace Wt;
 
 class US_ForecastGUI : public WContainerWidget {
 public:
-    US_ForecastGUI(WContainerWidget *parent);
+    US_ForecastGUI(US_Workspace *parent);
 private:
+    User* _user;
     //US_Project currScenario; // currently selected scenario
 
     // event handlers
@@ -60,7 +61,6 @@ private:
     WDateEdit* deNewTargetDate;
     WPushButton* btnCreateNewScenario;
     WLabel* lblMsg2; // feedback label for section 2
-
 
     // Scenario Transaction widgets
     WGroupBox* boxScenarioContent;

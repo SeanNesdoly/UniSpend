@@ -72,6 +72,7 @@ void US_Login::initializeWidgets() {
     // password label & field
     lblNewPassword = new WLabel("Password:", newUserContainer);
     txtNewPassword = new WLineEdit(newUserContainer);
+    txtNewPassword->setEchoMode(WLineEdit::EchoMode::Password);
     lblNewPassword->setBuddy(txtNewPassword);
     newUserContainer->addWidget(lblNewPassword);
     newUserContainer->addWidget(txtNewPassword);
@@ -104,11 +105,15 @@ void US_Login::initializeWidgets() {
 
 void US_Login::btnLogin_Clicked() {
     // user authentication logic
-    string username = txtUser->displayText().toUTF8();
-    string pass = txtPassword->displayText().toUTF8();
+    string username = txtUser->text().toUTF8();
+    string pass = txtPassword->text().toUTF8();
 
     try {
         _user = new User(username, pass);
+        if (_user != nullptr)
+            cout << _user->getName() << "login";
+        else
+            cout << "FAIL YA SHAT login";
 
         // reaching this statement denotes an authenticated user; create & show the workspace container!
         root = WApplication::instance()->root();
@@ -127,10 +132,10 @@ void US_Login::btnLogin_Clicked() {
 
 void US_Login::btnRegisterUser_Clicked() {
     // insert a new user into the database and show the workspace container
-    string username = txtNewUser->displayText().toUTF8();
-    string pass = txtNewPassword->displayText().toUTF8();
-    string fName = txtFirstName->displayText().toUTF8();
-    string lName = txtLastName->displayText().toUTF8();
+    string username = txtNewUser->text().toUTF8();
+    string pass = txtNewPassword->text().toUTF8();
+    string fName = txtFirstName->text().toUTF8();
+    string lName = txtLastName->text().toUTF8();
 
     try {
         _user = new User(username, pass, fName, lName);

@@ -14,17 +14,30 @@
 #include "US_SettingsGUI.h"
 #include "US_TransactionsGUI.h"
 
-US_Workspace::US_Workspace(WContainerWidget *parent, User *user):
+US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
     WContainerWidget(parent)
 {
-    user = user; // persisting user across containers
+    user = currUser; // persisting user across containers
+    if (user != nullptr)
+        cout << user->getName() << "workspace";
+    else
+        cout << "FAIL YA SHAT workspace";
 
     int numTransactions = 3;
-    int numCols = 5;
-    modelData = new WStandardItemModel(numTransactions, numCols, this);
+    int numCols = 5; // name | type | value | date | isRecurring
+    vector<string> headerRow = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)", "Recurring cost?"};
+    modelTransactionData = new WStandardItemModel(numTransactions, numCols, this);
+
     for (int row = 0; row < numTransactions; row++) {
         for (int col = 0; col < numCols; col++) {
             WStandardItem *item = new WStandardItem();
+            if (row == 0) {
+                item->setText(headerRow[col]);
+            } else {
+                item->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+            }
+
+            modelTransactionData->setItem(row, col, item);
         }
     }
 

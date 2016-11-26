@@ -10,15 +10,13 @@
 
 #include "US_ForecastGUI.h"
 
-US_ForecastGUI::US_ForecastGUI(WContainerWidget *parent):
+US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
         WContainerWidget(parent)
 {
-    setStyleClass("forecasting");
+    // retrieve the global user object from the parent workspace container
+    _user = parent->user;
 
-    // Retrieve the user object from the workspace class
-    US_Workspace *workspace = dynamic_cast<US_Workspace *>(parent);
-    //workspace->_user->getProjects()???? // TODO: get projects
-    //addWidget(new WLabel(workspace->_user->getFirstName()));
+    setStyleClass("forecasting");
 
     // Forecasting tab layout
     gridLayout = new WGridLayout();
@@ -32,6 +30,8 @@ US_ForecastGUI::US_ForecastGUI(WContainerWidget *parent):
     // current scenario selection
     lblScenario = new WLabel("Current Scenario:");
     listScenarios = new WComboBox();
+    // TODO: get scenarios!
+
     listScenarios->changed().connect(this, &US_ForecastGUI::listScenarios_Changed);
     lblScenario->setBuddy(listScenarios);
     boxForecastParams->addWidget(lblScenario);
