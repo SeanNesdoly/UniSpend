@@ -73,7 +73,8 @@ US_Project::US_Project(string username, string pName){
         sqlCommand ="UPDATE projects SET lastLogin = NOW() WHERE projectName = '"+pName+"' AND username ='"+username+"'";
 	stmt->execute(sqlCommand);
     }else{
-    	string sqlCommand = "UPDATE projects SET lastLogin = NOW() WHERE projectName = '"+projectName+"' AND username ='"+username+"'";
+    	string sqlCommand = "UPDATE projects SET lastLogin = NOW() WHERE username ='"+username+"'";
+        stmt->execute(sqlCommand);
     }
     res = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = '"+pName+"'");
     res2 = stmt->executeQuery("SELECT * FROM  `projects` WHERE `username` = '" +username+ "' AND `projectName` = 'main'");
@@ -192,6 +193,46 @@ bool US_Project::isScenario() {
 }
 */
 
+void US_Project::updateBalance(double newBalance){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, '"+startDate+"', '2017-04-30')"); // 2017-04-30 is hard coded as last day of school for the purpose of simplicity
+    res->next();
+    double oldMonthly = res->getInt(1);
+    
+
+    res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, NOW(), '2017-04-30')"); // 2017-04-30 is hard coded as last day of school for the purpose of simplicity
+    res->next();
+    double newMonthly = newBalance/res->getInt(1);
+
+    double spentSoFar = oldMonthly - monthlyAllowance;
+    newMonthly = newMonthly - spentSoFar;
+    std::ostringstream monthly;
+    std::ostringstream year;
+    monthly << newMonthly;
+    year << newBalance;
+    
+    string sqlCommand ="UPDATE projects SET monthlyAllowance = '" + monthly.str() + "' WHERE projectName = 'main' AND username ='"+username+"'";
+    stmt->execute(sqlCommand);
+    sqlCommand ="UPDATE projects SET yearBalance = '" + year.str() + "' WHERE projectName = 'main' AND username ='"+username+"'";
+    stmt->execute(sqlCommand);
+    sqlCommand ="UPDATE projects SET startDate = NOW() WHERE projectName = 'main' AND username ='"+username+"'";
+    stmt->execute(sqlCommand);
+
+
+
+
+    this-> monthlyAllowance = newMonthly;
+    this-> yearBalance = newBalance;
+}
+
+
 // Given a set a set of transactions this method will return the average amount spent per day from the projects start date till present.
 double US_Project::getAverage(vector<US_Transaction> transactionsList){
     sql::mysql::MySQL_Driver *driver;
@@ -209,6 +250,29 @@ double US_Project::getAverage(vector<US_Transaction> transactionsList){
     return average;
 
 }
+
+// returns the daily rate your spending needs to be bellow in order to have enough money to go do the scenario.
+double US_Project::getRequiredRate(){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    //sql::ResultSet *res2;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT DATEDIFF(LAST_DAY(NOW()), NOW())");
+    res->next();
+    double toSaveDaily = monthlyAllowance/res->getDouble(1);
+
+    delete res;
+    delete con;
+    delete stmt;
+
+    return toSaveDaily;
+}
+
 
 // method used to add a single transaction. adds to the transaction vector of the current project aswell as the SQL DB.
 // when impllementing addTransaction we need to check if their are any existing projects for the user. if there is then we need to add transaction to main then add transaction to the project(s). 
@@ -249,18 +313,58 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     	std::string nMAStr = nMA.str();
     	std::string Nbstr = Nb.str();
 
-    	sqlCommand ="UPDATE projects SET currentBalance = " + Nbstr + " WHERE projectName = 'main'";// change to also include username check
+    	sqlCommand ="UPDATE projects SET currentBalance = " + Nbstr + " WHERE projectName = 'main' AND username = '"+username+"'";
     	stmt->execute(sqlCommand);
 
-    	sqlCommand ="UPDATE projects SET monthlyAllowance = " + nMAStr + " WHERE projectName = 'main'";
+    	sqlCommand ="UPDATE projects SET monthlyAllowance = " + nMAStr + " WHERE projectName = 'main' AND username = '"+username+"'";
     	stmt->execute(sqlCommand);
 
     	this->currentBalance = newBalance; // adds the value of the transaction to the current balance
     	this->monthlyAllowance = newMonthlyAllowance;
     }
-    this->transactions.insert(this->transactions.end(), newTransaction); // inserts the transaction at the end of vector
+    this->transactions.push_back(newTransaction); // inserts the transaction at the end of vector
     delete con;
     delete stmt;
+}
+
+void US_Project::deleteTransaction(US_Transaction trans){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+
+    std::ostringstream val; //new monthly Allowance
+    val << trans.getValue();
+
+
+    if(trans.getProject() == "main"){
+    	 monthlyAllowance = monthlyAllowance + trans.getValue();
+    	 currentBalance = currentBalance + trans.getValue();
+
+         std::ostringstream newMonthlyAllowance;
+         newMonthlyAllowance << monthlyAllowance;
+         std::ostringstream newCurrentBalance;
+         newCurrentBalance << currentBalance;
+
+
+         string sqlCommand ="UPDATE projects SET currentBalance = " + newCurrentBalance.str() + " WHERE projectName = 'main' AND username = '"+username+"'";
+         stmt->execute(sqlCommand);
+
+         sqlCommand ="UPDATE projects SET monthlyAllowance = " + newMonthlyAllowance.str() + " WHERE projectName = 'main' AND username = '"+username+"'";
+         stmt->execute(sqlCommand);
+
+    }
+    string sqlCommand = "DELETE from `transactions` WHERE `username` = '" +trans.getUsername()+"' AND `name` = '"+trans.getName()+"' AND `type` = '"+trans.getType()+"' AND `value` = '"+val.str()+"' AND `date` = '"+trans.getDate()+"' AND `project` ='"+trans.getProject()+"'";
+    try{
+        stmt->execute(sqlCommand);
+        cout << trans.getProject() << " " << projectName << endl;
+    }catch(sql::SQLException e){
+        cout << e.what() <<endl;
+    }
 }
 
 
@@ -359,17 +463,7 @@ vector<US_Transaction> US_Project::getTypeTransactions(string type){
 
 
 
-/*
-void US_Project::deleteTransaction(US_Transaction oldTransaction){
-    for(int i=0; i < this->transactions.size(); i++){
-        // if oldTransaction ID equals the current transaction ID erase it from Transactions vector.
-        if(this->transactions.at(i).getTransactionId() == oldTransaction.getTransactionId()){
-            this->transactions.erase(this->transactions.begin()+i);
-            this->currentBalance = this->currentBalance - oldTransaction.getValue(); // subtracts the value of a transaction from current ballance
-        }
-    }
-}
-*/
+
 // Sums all transactions of a project up until endDate
 double US_Project::sumAllTransactions(vector<US_Transaction> transactionList){
     double sum = 0;
@@ -420,6 +514,10 @@ double US_Project::getScenarioCost(){
     return scenarioCost;
 }
 
+vector<US_Transaction> US_Project::getTransactions(){
+    return transactions;
+}
+
 /*
  * Setters
  */
@@ -430,5 +528,9 @@ void US_Project::setProjectName(string projectName){
 
 void US_Project::setCurrentBalance(double currentBalance){
     this->currentBalance = currentBalance;
+}
+
+void US_Project::setTransactions(vector<US_Transaction> transactions){
+    this->transactions = transactions;
 }
 

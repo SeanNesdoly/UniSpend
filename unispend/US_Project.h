@@ -28,11 +28,13 @@ public:
     double getYearBalance();
     double getLeftover();
     double getScenarioCost();
+    vector<US_Transaction> getTransactions();
 
     void setProjectName(string projectName);
     void setCurrentBalance(double currentBalance);
     void setRange(int selectedRange);
-
+    void setTransactions(vector<US_Transaction> transactions);
+    
     vector<US_Transaction> getAllTransactions();
     vector<US_Transaction> getAllTransactions(string date);
     vector<US_Transaction> getAllTransactions(string date1, string date2);
@@ -41,6 +43,8 @@ public:
     void deleteTransaction(US_Transaction oldTransaction);
     double sumAllTransactions(vector<US_Transaction>);
     double getAverage(vector<US_Transaction>);
+    double getRequiredRate();
+    void updateBalance(double newBalance);
 protected:
     int id;
     string username;
