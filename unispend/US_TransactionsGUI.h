@@ -40,4 +40,14 @@ private:
 	WPushButton* btnEdit;
 	WContainerWidget* newUserContainer;
 	WTable* table;
+	WLabel* lblAddTransaction;
+	WLineEdit* txtAddTransaction;
+	WLabel* lblAddDate;
+	WLineEdit* txtAddDate;
+	WLabel* lblAddDescription;
+	WLineEdit* txtAddDescription;
+	WLabel* lblAddCost;
+	WLineEdit* txtAddCost;
+	WPushButton* btnAddTransaction;
+	WHBoxLayout* hbox;
 };
