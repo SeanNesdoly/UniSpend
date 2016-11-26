@@ -140,23 +140,20 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
     lblMsgProject->setText("Success!");
     lblMsgProject->setStyleClass("message");
     // Update the project settings
-    // Change the project name
-    //_user->getMain().setProjectName(projectName);
-    // Change the project start balance
-    _user->getMain().setCurrentBalance(startingBalance);
-    // Change the project start date
-    cout << "start date is " << endl;
-    // Format and display date
+    // Update the yearly balance
+    _user->getMain().updateBalance(startingBalance);
     ostringstream dateFormatter;
     dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
     cout << dateFormatter.str() << endl;
     cout << "MAIN PROJECT: " << endl;
-    cout << "Current balance " << endl;
-    cout << _user->getMain().getCurrentBalance() << endl;
+    cout << "Get current monthly allowance: " << endl;
+    cout << _user->getMain().getMonthlyAllowance() << endl;
+    /*
     cout << "Current start date" << endl;
     cout << _user->getMain().getStartDate() << endl;
     cout << "Current username " << endl;
     cout << _user->getMain().getUsername() << endl;
+    */
 }
 
 // event listener to save currently set user settings
