@@ -9,15 +9,11 @@
  */
 
 #include "US_SettingsGUI.h"
-
+#include <sstream>
 US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 {
     // retrieve the global user object from the parent workspace container
     _user = parent->user;
-    if (_user != nullptr)
-        cout << _user->getName() << "settings";
-    else
-        cout << "FAIL YA SHAT settings";
 
     setStyleClass("settings");
     hbox = new WHBoxLayout();
@@ -143,7 +139,24 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
 
     lblMsgProject->setText("Success!");
     lblMsgProject->setStyleClass("message");
-
+    // Update the project settings
+    // Change the project name
+    //_user->getMain().setProjectName(projectName);
+    // Change the project start balance
+    _user->getMain().setCurrentBalance(startingBalance);
+    // Change the project start date
+    cout << "start date is " << endl;
+    // Format and display date
+    ostringstream dateFormatter;
+    dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
+    cout << dateFormatter.str() << endl;
+    cout << "MAIN PROJECT: " << endl;
+    cout << "Current balance " << endl;
+    cout << _user->getMain().getCurrentBalance() << endl;
+    cout << "Current start date" << endl;
+    cout << _user->getMain().getStartDate() << endl;
+    cout << "Current username " << endl;
+    cout << _user->getMain().getUsername() << endl;
 }
 
 // event listener to save currently set user settings
@@ -163,7 +176,22 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
     string lName = txtLastName->text().toUTF8();
 
     if (!failure) {
-        lblMsgUser->setText("Success!");
-        lblMsgUser->setStyleClass("message");
+        try
+        {
+            // Update the password
+            _user->setPassword(pass);
+            // Update the first name
+            _user->setFirstName(fName);
+            // Update the last name
+            _user->setLastName(lName);
+           // If got here - all values successfully updated
+           lblMsgUser->setText("Success!");
+           lblMsgUser->setStyleClass("message");
+        } catch (UserException& e)
+        {
+            lblMsgUser->setText(e.what());
+            lblMsgUser->setStyleClass("message");
+            cout << e.what() << endl;
+        }
     }
 }

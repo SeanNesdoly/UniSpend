@@ -5,45 +5,43 @@
 #ifndef TRANSACTIONS_US_TRANSACTION_H
 #define TRANSACTIONS_US_TRANSACTION_H
 
+#include <string>
+//#include "boost/date_time/gregorian/gregorian.hpp"
 #include "mysql_connection.h"
-#include <driver.h>
-#include <exception.h>
-#include <resultset.h>
-#include <statement.h>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
 #include "mysql_driver.h"
 #include "string.h"
-#include <vector>
 
 using namespace std;
 
-
 class US_Transaction{
 public:
-    US_Transaction(string user, string name, string type, string value, string date, string project);
-    string getUser();
-    string getName();
-    string getType();
-    string getValue();
-    string getDate();
+    US_Transaction(string username, string name, string type, double value, string date, string recurring, string project);
     string getProject();
-    void setUser(const string user);
+    string getName();
+    string getUsername();
+    string getType();
+    double getValue();
+    string getDate();
+    string getIsRecurring();
+//    boost::gregorian::date getDate();
     void setName(const string name);
     void setType(const string type);
-    void setValue(const string value);
-    void setDate(const string date);
-    void setRecurring(const string recurring);
-    friend int deleteTransaction(US_Transaction trans);
-    friend void repeatTransaction(string user, string name, string type, string value, string date, string project, string frequency, string range);
+    void setValue(const double value);
+//    void setDate(const boost::gregorian::date date);
+
 
 private:
-    string User;
+    string project;
+    string username;
     string name;
     string type;
-    string value;
+    double value;
     string date;
     string recurring;
-    string Project;
-    int ID;
 };
 
 

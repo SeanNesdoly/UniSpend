@@ -21,6 +21,10 @@
 #include <sstream>
 using namespace std;
 
+US_Project::US_Project(){
+    
+}
+
 // this constructor retrieves info from a project in DB
 US_Project::US_Project(string username, string pName){
     sql::mysql::MySQL_Driver *driver;
@@ -260,7 +264,7 @@ void US_Project::addTransaction(US_Transaction newTransaction){
 }
 
 
-vector<US_Transaction> US_Project::getAllTransactions(string username, string project){
+vector<US_Transaction> US_Project::getAllTransactions(){
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
@@ -270,7 +274,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = '"+project+ "'");
+    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = '"+projectName+ "'");
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
@@ -284,7 +288,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
 
 
 
-vector<US_Transaction> US_Project::getAllTransactions(string username, string project, string date){
+vector<US_Transaction> US_Project::getAllTransactions(string date){
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
@@ -294,7 +298,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = '"+project+"' AND `date` >= '"+date+ "' AND `date` < NOW() ");
+    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = '"+projectName+"' AND `date` >= '"+date+ "' AND `date` < NOW() ");
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
@@ -306,7 +310,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
     return results;
 }
 
-vector<US_Transaction> US_Project::getAllTransactions(string username, string project, string date1, string date2){
+vector<US_Transaction> US_Project::getAllTransactions(string date1, string date2){
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
@@ -316,7 +320,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `date` > '" +date1+ "' AND `date` < '"+date2+ "' AND `username` = '"+username+ "' AND `project` = '"+project+"'");
+    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `date` > '" +date1+ "' AND `date` < '"+date2+ "' AND `username` = '"+username+ "' AND `project` = '"+projectName+"'");
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
@@ -328,7 +332,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string username, string pr
     return results;
 }
 
-vector<US_Transaction> US_Project::getTypeTransactions(string username, string project, string type){
+vector<US_Transaction> US_Project::getTypeTransactions(string type){
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
@@ -338,7 +342,7 @@ vector<US_Transaction> US_Project::getTypeTransactions(string username, string p
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `type` = '"+type+"' AND `project` = '"+project+"'");
+    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `username` = '" +username+ "' AND `type` = '"+type+"' AND `project` = '"+projectName+"'");
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));

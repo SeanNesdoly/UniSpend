@@ -14,6 +14,7 @@ using namespace std;
 
 class US_Project {
 public:
+    US_Project();
     US_Project(string username, string pName);
     US_Project(string username, double currentBalance); //main project
     US_Project(string username, string projectName, double scenarioCost, string endDate); //scenario project
@@ -32,10 +33,10 @@ public:
     void setCurrentBalance(double currentBalance);
     void setRange(int selectedRange);
 
-    vector<US_Transaction> getAllTransactions(string user, string project);
-    vector<US_Transaction> getAllTransactions(string user, string project, string date);
-    vector<US_Transaction> getAllTransactions(string user, string project, string date1, string date2);
-    vector<US_Transaction> getTypeTransactions(string username, string project, string type);
+    vector<US_Transaction> getAllTransactions();
+    vector<US_Transaction> getAllTransactions(string date);
+    vector<US_Transaction> getAllTransactions(string date1, string date2);
+    vector<US_Transaction> getTypeTransactions(string type);
     void addTransaction(US_Transaction);
     void deleteTransaction(US_Transaction oldTransaction);
     double sumAllTransactions(vector<US_Transaction>);

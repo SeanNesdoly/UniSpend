@@ -17,6 +17,9 @@
 #include <mysql_driver.h>
 #include "string.h"
 
+#include "US_Project.h"
+#include "US_Transaction.h"
+
 using namespace std;
 
 class User
@@ -26,6 +29,8 @@ public:
     User(const string& username, const string& pass, const string& firstName, const string& lastName);
     // Login constructor
     User(const string& username, const string& pass);
+
+    void addTransaction(US_Transaction newTransaction);
     string& getName();
     string& getPassword();
     string& getFirstName();
@@ -33,12 +38,17 @@ public:
     void setPassword(const string& pass);
     void setFirstName(const string& firstName);
     void setLastName(const string& lastName);
+    void setScenarioVector(vector<US_Project> scenList);
+    US_Project getMain();
+    vector<US_Project> getScenarios();
 
 private:
     string name;
     string password;
     string fName;
     string lName;
+    US_Project mainProject;
+    vector<US_Project> scenarioProjects;
     //TODO: ADD US_Project objects ie. mainProject and scenario
 };
 

@@ -47,6 +47,11 @@ User::User(const string& username, const string& pass, const string& firstName, 
         cout << "Successfully created user with name " << name << endl;
         // Now that we have created user we need to initialize the US_Projects object and create the main project
         // By default we are saying user does not have a set budget since they specify this through settings to pass 0 to budget for month
+        US_Project main(name, 0.0);
+        this->mainProject = main;
+        US_Project newScenario(name, "testScenario", 24.0, "2016-11-30");
+        this->scenarioProjects.push_back(newScenario);
+
     }
 
     delete stmt;
@@ -55,8 +60,7 @@ User::User(const string& username, const string& pass, const string& firstName, 
 }
 
 // Login constructor
-User::User(const string& username, const string& pass) 
-{
+User::User(const string& username, const string& pass){
     // We need to first try to login to see if we can get the user
     // Then populate their info to all members of the object ie. firstname, lastname
     sql::mysql::MySQL_Driver *driver;
@@ -74,29 +78,54 @@ User::User(const string& username, const string& pass)
     stmt->execute("USE US_Database");
     string sqlCommand = "SELECT * FROM `users` WHERE `username` = '" + username + "'"; 
     res = stmt->executeQuery(sqlCommand);
-    if (res->next() == false)
-    {
+    if (res->next() == false){
         string errorStr = "User with username: " + username + " does not exist";
         throw UserException(errorStr);
     }
     else
     {
         // We need to check that both name and password match
-        if (res->getString("username").compare(username) == 0 && res->getString("password").compare(pass) == 0)
+        if(res->getString("username").compare(username) == 0 && res->getString("password").compare(pass) == 0)
         {
             // We populate the global variables for the object
             this->name = res->getString("username");
             this->password = res->getString("password");
             this->fName = res->getString("FirstName");
             this->lName = res->getString("LastName");
+            US_Project main(name, "main");
+    	    this->mainProject = main;
+            vector<US_Project> scenProjects;
+            sqlCommand = "SELECT * FROM `projects` WHERE `username` = '"+username+"' AND `projectName` != 'main'";
+            res = stmt->executeQuery(sqlCommand);
+            while(res->next())
+            {
+            	US_Project projectToAdd(username, res->getString("projectName"));
+                scenProjects.push_back(projectToAdd);
+            }
+            this->scenarioProjects = scenProjects;
             cout << "Successfully logged in and populated all fields" << endl;
-        }
-        else
-        {
+         } 
+         else
+         {
             throw UserException("Invalid login credentials.");
-        }
+         }
     }
 }
+
+
+// method used to add a single transaction. adds to the transaction vector of the current project aswell as the SQL DB.
+// when impllementing addTransaction we need to check if their are any existing projects for the user. if there is then we need to add transaction to main then add transaction to the project(s).
+void User::addTransaction(US_Transaction newTransaction){
+
+    this->mainProject.addTransaction(newTransaction);
+
+    for(int i=0; i < scenarioProjects.size(); i++){
+        newTransaction.setName(scenarioProjects.at(i).getProjectName());
+    	scenarioProjects.at(i).addTransaction(newTransaction);
+    }
+}
+
+
 
 string& User::getName()
 {
@@ -210,3 +239,20 @@ void User::setLastName(const string& lastName)
     delete stmt;
     delete con;   
 }
+
+US_Project User::getMain()
+{
+    return mainProject;
+}
+
+vector<US_Project> User::getScenarios()
+{
+    return scenarioProjects;
+}
+
+
+void User::setScenarioVector(vector<US_Project> scenList)
+{
+    scenarioProjects = scenList;
+}
+
