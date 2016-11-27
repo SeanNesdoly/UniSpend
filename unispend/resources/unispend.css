@@ -114,3 +114,29 @@ input[type="password"] {
 .settings td:last-child {
     text-align: center;
 }
+
+.overview {
+    padding-left: 20px;
+
+}
+
+.overview input[type="text"] { /* WLineEdit */
+    width: 200px;
+}
+
+.overview span{ /* WLineEdit */
+    padding-left: 20px;
+}
+
+.overview button{
+    width: 100px;
+}
+
+.overview-pie{
+    padding: 10px;
+}
+
+.overview canvas{
+    display: block;
+
+}
