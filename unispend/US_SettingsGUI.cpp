@@ -313,6 +313,18 @@ void US_SettingsGUI::btnAddTransaction_Click() {
     string date = deDate->text().toUTF8();
     string frequency = ddFrequency->currentText().toUTF8();
     int numRepeats = spinNumRepeats->value();
+    lblMsgTransaction->setStyleClass("error");
+    if(name == "") {
+        lblMsgTransaction->setText("Name of Transaction must not be blank!");
+        return;
+    }
+    else if(type == "") {
+        lblMsgTransaction->setText("Type must not be blank!");
+        return;
+    }
+    else
+        _user->getMain().repeatTransaction(_user->getName(), name, type, value, date, "main", frequency, numRepeats);
+
 
 }
 
