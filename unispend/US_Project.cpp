@@ -94,7 +94,6 @@ US_Project::US_Project(string username, string pName){
     delete res;
     delete con;
     delete stmt;
-
 }
 
 
@@ -193,45 +192,6 @@ bool US_Project::isScenario() {
 }
 */
 
-void US_Project::updateBalance(double newBalance){
-    sql::mysql::MySQL_Driver *driver;
-    sql::Connection *con;
-    sql::Statement *stmt;
-    sql::ResultSet *res;
-    driver = sql::mysql::get_mysql_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
-    stmt = con->createStatement();
-    stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, '"+startDate+"', '2017-04-30')"); // 2017-04-30 is hard coded as last day of school for the purpose of simplicity
-    res->next();
-    double oldMonthly = res->getInt(1);
-    
-
-    res = stmt->executeQuery("SELECT TIMESTAMPDIFF(MONTH, NOW(), '2017-04-30')"); // 2017-04-30 is hard coded as last day of school for the purpose of simplicity
-    res->next();
-    double newMonthly = newBalance/res->getInt(1);
-
-    double spentSoFar = oldMonthly - monthlyAllowance;
-    newMonthly = newMonthly - spentSoFar;
-    std::ostringstream monthly;
-    std::ostringstream year;
-    monthly << newMonthly;
-    year << newBalance;
-    
-    string sqlCommand ="UPDATE projects SET monthlyAllowance = '" + monthly.str() + "' WHERE projectName = 'main' AND username ='"+username+"'";
-    stmt->execute(sqlCommand);
-    sqlCommand ="UPDATE projects SET yearBalance = '" + year.str() + "' WHERE projectName = 'main' AND username ='"+username+"'";
-    stmt->execute(sqlCommand);
-    sqlCommand ="UPDATE projects SET startDate = NOW() WHERE projectName = 'main' AND username ='"+username+"'";
-    stmt->execute(sqlCommand);
-
-
-
-
-    this-> monthlyAllowance = newMonthly;
-    this-> yearBalance = newBalance;
-}
-
 
 // Given a set a set of transactions this method will return the average amount spent per day from the projects start date till present.
 double US_Project::getAverage(vector<US_Transaction> transactionsList){
@@ -246,7 +206,8 @@ double US_Project::getAverage(vector<US_Transaction> transactionsList){
     res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +startDate+ "')");
     res->next();
     double sum = this->sumAllTransactions(transactionsList);
-    double average = sum/res->getDouble(1);
+    int numOfDays = res->getInt(1)+1;
+    double average = sum/numOfDays;
     return average;
 
 }
@@ -294,12 +255,12 @@ void US_Project::addTransaction(US_Transaction newTransaction){
 
     //if user attempts to input an ID that already exists the SQLException
     //error will be caught and the user will be asked to try again
-    try{
+   // try{
     stmt->execute(sqlCommand);
 
-       }catch(sql::SQLException e){
-       cout << endl << "The ID is already in use please input a different id" << endl;
-    }
+     //  }catch(sql::SQLException e){
+       //cout << endl << "The ID is already in use please input a different id" << endl;
+   // }
     // if project is main updat currentBalance and monthlyAllowance as a result of the new transaction 
     // if it's a scenario (not main) then just add the transaction to the scenario transaction vector.
     if(projectName == "main"){
@@ -358,7 +319,7 @@ void US_Project::deleteTransaction(US_Transaction trans){
          stmt->execute(sqlCommand);
 
     }
-    string sqlCommand = "DELETE from `transactions` WHERE `username` = '" +trans.getUsername()+"' AND `name` = '"+trans.getName()+"' AND `type` = '"+trans.getType()+"' AND `value` = '"+val.str()+"' AND `date` = '"+trans.getDate()+"' AND `project` ='"+trans.getProject()+"'";
+    string sqlCommand = "DELETE from `transactions` WHERE `username` = '" +trans.getUsername()+"' AND `name` = '"+trans.getName()+"' AND `type` = '"+trans.getType()+"' AND `value` = '"+val.str()+"' AND `date` = '"+trans.getDate()+"' AND `project` ='"+trans.getProject()+"' AND `ID` = '"+trans.getId()+"'";
     try{
         stmt->execute(sqlCommand);
         cout << trans.getProject() << " " << projectName << endl;
@@ -458,7 +419,25 @@ vector<US_Transaction> US_Project::getTypeTransactions(string type){
     return results;
 }
 
-
+void US_Project:: repeatTransaction(string user, string name, string type, double value, string date, string project, string frequency, int range){
+    for(int i = 0; i < range; i++) {
+        string date2 = "'" + date + "'";
+        date2.append(" + INTERVAL ");
+        std::ostringstream vstr;
+	vstr << i;
+	date2.append(vstr.str());
+        if (frequency == "daily")
+            date2.append(" day");
+        else if (frequency == "weekly")
+            date2.append(" week");
+        else if (frequency == "monthly")
+            date2.append(" month");
+        else if (frequency == "yearly")
+            date2.append(" year");
+        US_Transaction trans = US_Transaction(user, name, type, value, date2, "1", project);
+        addTransaction(trans);
+    }
+}
 
 
 
@@ -472,6 +451,8 @@ double US_Project::sumAllTransactions(vector<US_Transaction> transactionList){
     }
     return sum;
 }
+
+
 
 
 
@@ -517,6 +498,7 @@ double US_Project::getScenarioCost(){
 vector<US_Transaction> US_Project::getTransactions(){
     return transactions;
 }
+
 
 /*
  * Setters

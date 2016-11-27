@@ -30,7 +30,9 @@ public:
     // Login constructor
     User(const string& username, const string& pass);
 
+    void updateBalance(double newBalance);
     void addTransaction(US_Transaction newTransaction);
+    void deleteTransaction(US_Transaction oldTransaction);
     string& getName();
     string& getPassword();
     string& getFirstName();

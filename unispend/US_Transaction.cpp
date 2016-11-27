@@ -25,6 +25,14 @@ void US_Transaction::setValue(const double value){
     this->value = value;
 }
 
+void US_Transaction::setProjectName(const string projectName){
+    this->project = projectName;
+}
+
+void US_Transaction::setRecurring(const string recurring){
+    this->recurring = recurring;
+}
+
 //void US_Transaction::setDate(const boost::gregorian::date date){
 //    this->date = date;
 //}
@@ -55,7 +63,9 @@ string US_Transaction::getIsRecurring(){
 	return recurring;
 }
 
-
+string US_Transaction::getId(){
+    return id;
+}
 
 //boost::gregorian::date US_Transaction::getDate(){
 //    return date;

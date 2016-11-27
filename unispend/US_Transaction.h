@@ -27,10 +27,13 @@ public:
     double getValue();
     string getDate();
     string getIsRecurring();
+    string getId();
 //    boost::gregorian::date getDate();
     void setName(const string name);
     void setType(const string type);
     void setValue(const double value);
+    void setProjectName(const string projectName);
+    void setRecurring(const string recurring);
 //    void setDate(const boost::gregorian::date date);
 
 
@@ -42,6 +45,7 @@ private:
     double value;
     string date;
     string recurring;
+    string id;
 };
 
 
