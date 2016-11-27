@@ -45,6 +45,7 @@ public:
     double getAverage(vector<US_Transaction>);
     double getRequiredRate();
     void updateBalance(double newBalance);
+    void repeatTransaction(string user, string name, string type, double value, string date, string project, string frequency, int range);
 protected:
     int id;
     string username;

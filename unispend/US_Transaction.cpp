@@ -9,7 +9,10 @@ US_Transaction::US_Transaction(string username, string name, string type, double
     this->username = username;
     this->type = type;
     this->value = value;
-    this->date = date;
+    if(recurring == "0")
+        this->date = "'" +date+ "'";
+    else
+        this->date = date;
     this->recurring = recurring;
 }
 
@@ -23,6 +26,14 @@ void US_Transaction::setType(const string type){
 
 void US_Transaction::setValue(const double value){
     this->value = value;
+}
+
+void US_Transaction::setProjectName(const string projectName){
+    this->project = projectName;
+}
+
+void US_Transaction::setRecurring(const string recurring){
+    this->recurring = recurring;
 }
 
 //void US_Transaction::setDate(const boost::gregorian::date date){
@@ -55,7 +66,9 @@ string US_Transaction::getIsRecurring(){
 	return recurring;
 }
 
-
+string US_Transaction::getId(){
+    return id;
+}
 
 //boost::gregorian::date US_Transaction::getDate(){
 //    return date;

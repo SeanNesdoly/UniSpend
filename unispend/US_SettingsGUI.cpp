@@ -241,7 +241,8 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
     lblMsgProject->setStyleClass("message");
     // Update the project settings
     // Update the yearly balance
-    _user->getMain().updateBalance(startingBalance);
+    _user->updateBalance(startingBalance);
+
     //ostringstream dateFormatter;
     //dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
     //cout << dateFormatter.str() << endl;

@@ -92,7 +92,9 @@ User::User(const string& username, const string& pass){
             this->password = res->getString("password");
             this->fName = res->getString("FirstName");
             this->lName = res->getString("LastName");
-            US_Project main(name, "main");
+            US_Project main(res->getString("username"), "main");
+            vector<US_Transaction> trans = main.getAllTransactions();
+            main.setTransactions(trans);
     	    this->mainProject = main;
             vector<US_Project> scenProjects;
             sqlCommand = "SELECT * FROM `projects` WHERE `username` = '"+username+"' AND `projectName` != 'main'";
@@ -100,6 +102,8 @@ User::User(const string& username, const string& pass){
             while(res->next())
             {
             	US_Project projectToAdd(username, res->getString("projectName"));
+                vector<US_Transaction> toAdd = projectToAdd.getAllTransactions();
+                projectToAdd.setTransactions(toAdd);
                 scenProjects.push_back(projectToAdd);
             }
             this->scenarioProjects = scenProjects;
@@ -120,11 +124,38 @@ void User::addTransaction(US_Transaction newTransaction){
     this->mainProject.addTransaction(newTransaction);
 
     for(int i=0; i < scenarioProjects.size(); i++){
-        newTransaction.setName(scenarioProjects.at(i).getProjectName());
-    	scenarioProjects.at(i).addTransaction(newTransaction);
+        newTransaction.setProjectName(scenarioProjects.at(i).getProjectName());
+    	this->scenarioProjects.at(i).addTransaction(newTransaction);
     }
 }
 
+void User::deleteTransaction(US_Transaction oldTransaction){
+    this->mainProject.deleteTransaction(oldTransaction);
+    vector<US_Transaction> updated = this->mainProject.getAllTransactions();
+    this->mainProject.setTransactions(updated);
+
+    for(int i=0; i < scenarioProjects.size(); i++){
+        oldTransaction.setProjectName(scenarioProjects.at(i).getProjectName());
+        this->scenarioProjects.at(i).deleteTransaction(oldTransaction);
+        vector<US_Transaction> updated = this->scenarioProjects.at(i).getAllTransactions();
+        this->scenarioProjects.at(i).setTransactions(updated);
+    }
+
+}
+
+void User::updateBalance(double balance){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    string sqlCommand = "DELETE from `projects` WHERE `username` = '" +name+"' AND `projectName` = 'main'";
+    stmt->execute(sqlCommand);
+    US_Project newMain(name, balance);
+    this->mainProject = newMain;
+}
 
 
 string& User::getName()
