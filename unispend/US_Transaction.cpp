@@ -9,7 +9,10 @@ US_Transaction::US_Transaction(string username, string name, string type, double
     this->username = username;
     this->type = type;
     this->value = value;
-    this->date = date;
+    if(recurring == "0")
+        this->date = "'" +date+ "'";
+    else
+        this->date = date;
     this->recurring = recurring;
 }
 

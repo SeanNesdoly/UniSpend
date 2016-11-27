@@ -251,7 +251,7 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
 
-    string sqlCommand = "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`) VALUES ('"+newTransaction.getUsername()+"','" + newTransaction.getName() + "','" + newTransaction.getType() + "','" +val+"','"+newTransaction.getDate()+"','"+newTransaction.getIsRecurring()+"','"+newTransaction.getProject()+"')";
+    string sqlCommand = "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`) VALUES ('"+newTransaction.getUsername()+"','" + newTransaction.getName() + "','" + newTransaction.getType() + "','" +val+"',"+newTransaction.getDate()+",'"+newTransaction.getIsRecurring()+"','"+newTransaction.getProject()+"')";
 
     //if user attempts to input an ID that already exists the SQLException
     //error will be caught and the user will be asked to try again
