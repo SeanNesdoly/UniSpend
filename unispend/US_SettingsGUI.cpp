@@ -198,6 +198,7 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     ddFrequency->addItem("daily");
     ddFrequency->addItem("weekly");
     ddFrequency->addItem("monthly");
+    ddFrequency->addItem("yearly");
     lblFrequency->setBuddy(ddFrequency);
     boxAddTransaction->addWidget(lblFrequency);
     boxAddTransaction->addWidget(ddFrequency);
@@ -215,6 +216,10 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     btnAddTransaction = new WPushButton("Add Recurring Transaction");
     btnAddTransaction->clicked().connect(this, &US_SettingsGUI::btnAddTransaction_Click);
     boxAddTransaction->addWidget(btnAddTransaction);
+
+    // user feedback
+    lblMsgTransaction = new WLabel();
+    boxAddTransaction->addWidget(lblMsgTransaction);
 }
 
 // event listener to save currently set project settings
@@ -288,11 +293,25 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
     }
 }
 
+// TODO: patrick
 void US_SettingsGUI::btnAddTransaction_Click() {
+    string name = txtName->text().toUTF8();
+    string type = txtType->text().toUTF8();
 
-}
+    // parse transaction value from widget
+    double value;
+    try {
+        string strValue = txtValue->text().toUTF8();
+        value = boost::lexical_cast<double>(value);
+    } catch(std::exception &e) {
+        lblMsgTransaction->setText("Value must be a number!");
+        lblMsgTransaction->setStyleClass("error");
+        return;
+    }
 
-void US_SettingsGUI::btnDeleteTransaction_Click() {
+    string date = deDate->text().toUTF8();
+    string frequency = ddFrequency->currentText().toUTF8();
+    int numRepeats = spinNumRepeats->value();
 
 }
 
