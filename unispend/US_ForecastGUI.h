@@ -11,14 +11,20 @@
 #pragma once
 
 #include <Wt/WContainerWidget>
-#include <Wt/WGridLayout>
+#include <Wt/WHBoxLayout>
+#include <Wt/WVBoxLayout>
 #include <Wt/WGroupBox>
 #include <Wt/WLabel>
 #include <Wt/WComboBox>
 #include <Wt/WDateEdit>
 #include <Wt/WPushButton>
+#include <Wt/WHBoxLayout>
+#include <Wt/WVBoxLayout>
+#include <Wt/WProgressBar>
+#include <Wt/WTable>
 
 #include "US_Workspace.h"
+#include "US_User.h"
 #include "US_Project.h"
 
 using namespace Wt;
@@ -36,7 +42,9 @@ private:
     void btnCreateNewScenario_Click(); // create a new scenario
 
     // WIDGETS
-    WGridLayout* gridLayout;
+    WHBoxLayout* hbox;
+
+    WContainerWidget* divLeft; // holds forecasting params & new scenario widgets
 
     // Forecasting Parameter widgets
     WGroupBox* boxForecastParams;
@@ -55,8 +63,6 @@ private:
     WLineEdit* txtNewScenario;
     WLabel* lblNewScenarioCost;
     WLineEdit* txtNewScenarioCost;
-    WLabel* lblNewStartDate;
-    WDateEdit* deNewStartDate;
     WLabel* lblNewTargetDate;
     WDateEdit* deNewTargetDate;
     WPushButton* btnCreateNewScenario;
@@ -64,5 +70,18 @@ private:
 
     // Scenario Transaction widgets
     WGroupBox* boxScenarioContent;
+    WLabel* lblScenarioRange;
+    WTable* tblScenarioData;
+
+    // Scenario Analysis
+    WGroupBox* boxScenarioAnalysis;
+    WLabel* lblLeftover;
+    WLineEdit* txtLeftover;
+    WProgressBar* barMoneySpent;
+    WLabel* lblSpendingWithScenario;
+    WLineEdit* txtSpendingWithScenario;
+    WLabel* lblSpendingWithoutScenario;
+    WLineEdit* txtSpendingWithoutScenario;
+
 
 };

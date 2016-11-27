@@ -19,13 +19,17 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     setStyleClass("forecasting");
 
     // Forecasting tab layout
-    gridLayout = new WGridLayout();
-    this->setLayout(gridLayout);
+    hbox = new WHBoxLayout();
+    this->setLayout(hbox);
 
+    divLeft = new WContainerWidget();
+    hbox->addWidget(divLeft);
+
+    // ================================
     // Forecasting Parameter widgets
     // ================================
     boxForecastParams = new WGroupBox("Forecasting Parameters");
-    gridLayout->addWidget(boxForecastParams, 0, 0);
+    divLeft->addWidget(boxForecastParams);
 
     // current scenario selection
     lblScenario = new WLabel("Current Scenario:");
@@ -63,10 +67,11 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
 
 
 
+    // =======================
     // New Scenario widgets
     // =======================
     boxCreateScenario = new WGroupBox("Create a New Scenario");
-    gridLayout->addWidget(boxCreateScenario, 1, 0);
+    divLeft->addWidget(boxCreateScenario);
 
     // new scenario name
     lblNewScenario = new WLabel("New Scenario Name:");
@@ -81,15 +86,6 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblNewScenarioCost->setBuddy(txtNewScenarioCost);
     boxCreateScenario->addWidget(lblNewScenarioCost);
     boxCreateScenario->addWidget(txtNewScenarioCost);
-
-    // new scenario start date
-    lblNewStartDate = new WLabel("New Scenario Start Date:");
-    deNewStartDate = new WDateEdit();
-    deNewStartDate->setFormat("yyyy-MM-dd");
-    deNewStartDate->setDate(WDate::currentServerDate()); // TODO: from database
-    lblNewStartDate->setBuddy(deNewStartDate);
-    boxCreateScenario->addWidget(lblNewStartDate);
-    boxCreateScenario->addWidget(deNewStartDate);
 
     // new scenario target date
     lblNewTargetDate = new WLabel("New Scenario Target Date:");
@@ -111,14 +107,96 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
 
 
 
+    // ==========================
     // Scenario Content widgets
     // ==========================
     boxScenarioContent = new WGroupBox("Scenario Transactions");
-    gridLayout->addWidget(boxScenarioContent, 0, 1);
+    hbox->addWidget(boxScenarioContent, 1); // add section to tab container
+
+    lblScenarioRange = new WLabel("<b>Scenario Transactions in the Range: </b>"); // TODO: add in scenario date range
+    boxScenarioContent->addWidget(lblScenarioRange);
+
+    tblScenarioData = new WTable();
+    tblScenarioData->setHeaderCount(1);
+    tblScenarioData->setWidth(Wt::WLength("100%"));
+
+    // stlying table
+    tblScenarioData->addStyleClass("table form-inline");
+    tblScenarioData->addStyleClass("table-bordered");
+    tblScenarioData->addStyleClass("table-hover");
+    tblScenarioData->addStyleClass("table-striped");
+
+    // header row
+    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)"};
+    int numTransactions = 20; // TODO: replace
+    int numCols = headerRowVals.size(); // name | type | value | date
+    for (int row = 0; row < numTransactions; row++) {
+        for (int col = 0; col < numCols; col++) {
+            WText *cell = new WText();
+
+            if (row == 0) {
+                cell->setText(headerRowVals.at(col));
+            } else {
+                cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+            }
+
+            tblScenarioData->elementAt(row, col)->addWidget(cell);
+        }
+    }
+
+    boxScenarioContent->addWidget(tblScenarioData);
+
+    /*tblScenarioData = new WTableView();
+    tblScenarioData->setAlternatingRowColors(true);
+    tblScenarioData->setSelectionMode(Wt::NoSelection);
+    tblScenarioData->setSortingEnabled(true);
+    tblScenarioData->setHeaderHeight(0);
+    tblScenarioData->setModel(parent->modelForecastingData);
+    hbox->addWidget(tblScenarioData, 1);*/
 
 
-    // Setting the grid stretch factors
-    gridLayout->setColumnStretch(1,1);
+
+    // ==========================
+    // Scenario Analysis widgets
+    // ==========================
+    boxScenarioAnalysis = new WGroupBox("Scenario Analysis");
+    hbox->addWidget(boxScenarioAnalysis);
+
+    // progress bar for money spent @ target date
+    //lblMoneySpent = new WLabel("<b>Current $ allocation towards target balance:</b>");
+    barMoneySpent = new WProgressBar();
+    barMoneySpent->setFormat("Leftover $ towards target balance %.0f %%");
+    barMoneySpent->resize(Wt::WLength("100%"),100);
+    barMoneySpent->setRange(0,100); // TODO: from database
+    barMoneySpent->setValue(69); // TODO: from database
+    boxScenarioAnalysis->addWidget(barMoneySpent);
+
+    // leftover amount after scenario
+    lblLeftover = new WLabel("$ left over to date:");
+    txtLeftover = new WLineEdit();
+    txtLeftover->setEnabled(false);
+    txtLeftover->setText("$ LEFTOVER"); // TODO: from database
+    lblLeftover->setBuddy(txtLeftover);
+    boxScenarioAnalysis->addWidget(lblLeftover);
+    boxScenarioAnalysis->addWidget(txtLeftover);
+
+    // average spending with scenario costs applied
+    lblSpendingWithScenario = new WLabel("Average ($/day) during school year:");
+    txtSpendingWithScenario = new WLineEdit();
+    txtSpendingWithScenario->setEnabled(false);
+    txtSpendingWithScenario->setText("$ AVG_SPENDING_WITH_SCENARIO");
+    lblSpendingWithScenario->setBuddy(txtSpendingWithScenario);
+    boxScenarioAnalysis->addWidget(lblSpendingWithScenario);
+    boxScenarioAnalysis->addWidget(txtSpendingWithScenario);
+
+    // average spending WITHOUT scenario costs applied
+    lblSpendingWithoutScenario = new WLabel("Average ($/day) since addition of Scenario:"); // TODO: scenario name
+    txtSpendingWithoutScenario = new WLineEdit();
+    txtSpendingWithoutScenario->setEnabled(false);
+    txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
+    lblSpendingWithoutScenario->setBuddy(txtSpendingWithoutScenario);
+    boxScenarioAnalysis->addWidget(lblSpendingWithoutScenario);
+    boxScenarioAnalysis->addWidget(txtSpendingWithoutScenario);
 }
 
 // event handler for the current scenario combo box
@@ -129,8 +207,6 @@ void US_ForecastGUI::listScenarios_Changed() {
 
 // update the current scenario's target balance and date
 void US_ForecastGUI::btnUpdateBalanceAndDate_Click() {
-
-
     // parse balance from widget
     double balance;
     try {
@@ -164,7 +240,6 @@ void US_ForecastGUI::btnCreateNewScenario_Click() {
         return;
     }
 
-    WDate startDate = deNewStartDate->date();
     WDate targetDate = deNewTargetDate->date();
 
     // TODO: insert into database via Project constructor call

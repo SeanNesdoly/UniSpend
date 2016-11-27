@@ -18,7 +18,11 @@
 #include <Wt/WPushButton>
 #include <Wt/WLabel>
 #include <Wt/WLineEdit>
-#include <Wt/WTableView>
+#include <Wt/WVBoxLayout>
+#include <Wt/WComboBox>
+#include <Wt/WSpinBox>
+#include <Wt/WTable>
+#include <Wt/WImage>
 
 #include <string>
 #include "US_Workspace.h"
@@ -36,9 +40,13 @@ private:
     // event handlers
     void btnSaveProjectSettings_Click();
     void btnSaveUserSettings_Click();
+    void btnAddTransaction_Click();
+    void btnDeleteTransaction_Click();
 
     // WIDGETS
-    WHBoxLayout* hbox;
+    WHBoxLayout* hbox_root;
+
+    WContainerWidget* divSettings; // div for project & user settings
 
     // Project Settings
     WGroupBox* boxProjectSettings;
@@ -46,14 +54,8 @@ private:
     WLineEdit* txtProjectName;
     WLabel* lblStartBalance;
     WLineEdit* txtStartBalance;
-    WLabel* lblStartDate;
-    WDateEdit* deStartDate;
     WPushButton* btnSaveProjectSettings;
     WLabel* lblMsgProject; // feedback for project settings
-
-    // Recurring Transactions
-    WGroupBox* boxRecurringCosts;
-    WTableView* tblRecurringCosts;
 
     // User Settings
     WGroupBox* boxUserSettings;
@@ -67,4 +69,25 @@ private:
     WLineEdit* txtLastName;
     WPushButton* btnSaveUserSettings;
     WLabel* lblMsgUser; // feedback for user settings
+
+    // Recurring Transactions Table
+    WGroupBox* boxTable;
+    WTable* tblRecurringCosts;
+
+    // Add Recurring Transactions
+    WGroupBox* boxAddTransaction;
+    WLabel* lblName;
+    WLineEdit* txtName;
+    WLabel* lblType;
+    WLineEdit* txtType;
+    WLabel* lblValue;
+    WLineEdit* txtValue;
+    WLabel* lblDate;
+    WDateEdit* deDate;
+    WLabel* lblFrequency;
+    WComboBox* ddFrequency;
+    WLabel* lblNumRepeats;
+    WSpinBox* spinNumRepeats;
+    WPushButton* btnAddTransaction;
+    WLabel* lblMsgTransaction;
 };

@@ -18,28 +18,47 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
     WContainerWidget(parent)
 {
     user = currUser; // persisting user across containers
-    if (user != nullptr)
-        cout << user->getName() << "workspace";
-    else
-        cout << "FAIL YA SHAT workspace";
 
-    int numTransactions = 3;
-    int numCols = 5; // name | type | value | date | isRecurring
-    vector<string> headerRow = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)", "Recurring cost?"};
-    modelTransactionData = new WStandardItemModel(numTransactions, numCols, this);
+    // CREATING MODELS FOR GRAPHICAL WIDGETS
+    /*int numTransactions;
+    int numCols;
 
+    // header row
+    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)", "Frequency"};
+    vector<WStandardItem*> headerRow;
+    for (int i = 0; i < headerRowVals.size(); i++) {
+        WStandardItem *item = new WStandardItem();
+        item->setText(headerRowVals.at(i));
+        item->setEditable(false);
+        headerRow.push_back(item);
+    }
+
+//    // FORECASTING TABLE - transaction within range of a scenario
+//    numTransactions = 3; // TODO: replace
+//    numCols = 5; // name | type | value | date | frequency
+//    modelForecastingData = new WStandardItemModel(numTransactions, numCols, this);
+//    for (int row = 0; row < numTransactions; row++) {
+//        for (int col = 0; col < numCols; col++) {
+//            WStandardItem *item = new WStandardItem();
+//            item->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+//            modelForecastingData->setItem(row, col, item);
+//        }
+//    }
+//    modelForecastingData->insertRow(0, headerRow);
+
+    // SETTINGS TABLE - recurring transactions
+    numTransactions = 3; // TODO: replace
+    numCols = 5; // name | type | value | date | frequency
+    modelRecurringTransactionData = new WStandardItemModel(numTransactions, numCols, this);
     for (int row = 0; row < numTransactions; row++) {
         for (int col = 0; col < numCols; col++) {
             WStandardItem *item = new WStandardItem();
-            if (row == 0) {
-                item->setText(headerRow[col]);
-            } else {
-                item->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
-            }
-
-            modelTransactionData->setItem(row, col, item);
+            item->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+            modelRecurringTransactionData->setItem(row, col, item);
         }
     }
+    modelRecurringTransactionData->insertRow(0, headerRow);*/
+
 
     // container setup
     setStyleClass("workspace");
@@ -68,8 +87,13 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
     rightMenu = new WMenu();
     navigationBar->addMenu(rightMenu, AlignRight);
 
+    currentBalance = new WMenuItem("Balance on " + WDate::currentDate().toString().toUTF8() + ": "); // TODO: add current balance
+    currentBalance->setSelectable(false);
+    currentBalance->setPadding(WLength(30), Wt::Side::Right);
+    rightMenu->addItem(currentBalance);
+
     // logout onclick widget
-    logout = new WMenuItem("Logout");
+    logout = new WMenuItem("Logout, ");//user->getFirstName() + " " + user->getLastName()); TODO: remove
     logout->clicked().connect(this, &US_Workspace::btnLogout_Clicked);
     rightMenu->addItem(logout);
 

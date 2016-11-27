@@ -77,10 +77,19 @@ input[type="password"] {
 .forecasting input[type="text"] { /* WLineEdit */
     width: 300px;
     margin-bottom: 10px;
+    display: block;
 }
 
 .forecasting button { /* WPushButton */
     margin-top: 10px;
+}
+
+.forecasting div {
+    margin-bottom: 20px;
+}
+
+.progress .bar-label {
+    font-weight: bold;
 }
 
 /* Settings Tab */
@@ -90,9 +99,18 @@ input[type="password"] {
 
 .settings fieldset { /*  WGroupBox */
     padding-right: 50px;
+    padding-bottom: 50px;
 }
 
 .settings input[type="text"] { /* WLineEdit */
     width: 300px;
     margin-bottom: 20px;
+}
+
+.settings select {
+    margin-bottom: 20px;
+}
+
+.settings td:last-child {
+    text-align: center;
 }

@@ -77,6 +77,13 @@ void US_Login::initializeWidgets() {
     newUserContainer->addWidget(lblNewPassword);
     newUserContainer->addWidget(txtNewPassword);
 
+    lblStartingBalance = new WLabel("Initial Account Balance ($):", newUserContainer);
+    txtStartingBalance = new WLineEdit(newUserContainer);
+    txtStartingBalance->setEmptyText("budget for the remaining school year");
+    lblStartingBalance->setBuddy(txtStartingBalance);
+    newUserContainer->addWidget(lblStartingBalance);
+    newUserContainer->addWidget(txtStartingBalance);
+
     // fist name of user
     lblFirstName = new WLabel("First Name:", newUserContainer);
     txtFirstName = new WLineEdit(newUserContainer);
@@ -110,10 +117,6 @@ void US_Login::btnLogin_Clicked() {
 
     try {
         _user = new User(username, pass);
-        if (_user != nullptr)
-            cout << _user->getName() << "login";
-        else
-            cout << "FAIL YA SHAT login";
 
         // reaching this statement denotes an authenticated user; create & show the workspace container!
         root = WApplication::instance()->root();
@@ -136,6 +139,17 @@ void US_Login::btnRegisterUser_Clicked() {
     string pass = txtNewPassword->text().toUTF8();
     string fName = txtFirstName->text().toUTF8();
     string lName = txtLastName->text().toUTF8();
+
+    // parse starting balance from widget
+    double startingBalance;
+    try {
+        string strStartingBalance = txtStartingBalance->text().toUTF8();
+        startingBalance = boost::lexical_cast<double>(strStartingBalance);
+    } catch(std::exception &e) {
+        lblErrors->setText("Starting balance must be a number!");
+        lblErrors->show();
+        return;
+    }
 
     try {
         _user = new User(username, pass, fName, lName);

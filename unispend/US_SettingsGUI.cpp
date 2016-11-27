@@ -9,21 +9,27 @@
  */
 
 #include "US_SettingsGUI.h"
+
 #include <sstream>
+
 US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 {
     // retrieve the global user object from the parent workspace container
     _user = parent->user;
 
     setStyleClass("settings");
-    hbox = new WHBoxLayout();
-    this->setLayout(hbox);
+    hbox_root = new WHBoxLayout();
+    this->setLayout(hbox_root);
+
+
+    divSettings = new WContainerWidget();
+    hbox_root->addWidget(divSettings);
 
     // ===============================
     // Project-level Settings Section
     // ===============================
     boxProjectSettings = new WGroupBox("Project Settings");
-    hbox->addWidget(boxProjectSettings, 0);
+    divSettings->addWidget(boxProjectSettings);
 
     // project name
     lblProjectName = new WLabel("Project Name:");
@@ -33,23 +39,15 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxProjectSettings->addWidget(txtProjectName);
 
     // main project starting balance
-    lblStartBalance = new WLabel("Starting Balance:");
+    lblStartBalance = new WLabel("Budget for the School Year:");
     txtStartBalance = new WLineEdit();
+    txtStartBalance->setEmptyText("initial account balance on project start date");
     lblStartBalance->setBuddy(txtStartBalance);
     boxProjectSettings->addWidget(lblStartBalance);
     boxProjectSettings->addWidget(txtStartBalance);
 
-    // project start date label & editor
-    lblStartDate = new WLabel("Project Start Date:");
-    deStartDate = new WDateEdit();
-    deStartDate->setFormat("yyyy-MM-dd");
-    deStartDate->setDate(WDate::currentServerDate()); // TODO: from database
-    lblStartDate->setBuddy(deStartDate);
-    boxProjectSettings->addWidget(lblStartDate);
-    boxProjectSettings->addWidget(deStartDate);
-
     // save project settings
-    btnSaveProjectSettings = new WPushButton("Save Project Settings");
+    btnSaveProjectSettings = new WPushButton("Update Starting Balance");
     btnSaveProjectSettings->clicked().connect(this, &US_SettingsGUI::btnSaveProjectSettings_Click);
     boxProjectSettings->addWidget(btnSaveProjectSettings);
 
@@ -58,30 +56,17 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxProjectSettings->addWidget(lblMsgProject);
 
 
-    // ==================================
-    // Recurring Transactions Section
-    // ==================================
-    boxRecurringCosts = new WGroupBox("Recurring Transactions");
-    hbox->addWidget(boxRecurringCosts, 1);
-
-    // Repeating Transactions Table
-    tblRecurringCosts = new WTableView();
-    tblRecurringCosts->setAlternatingRowColors(true);
-    tblRecurringCosts->setSelectionMode(Wt::SingleSelection);
-    tblRecurringCosts->setModel(parent->modelTransactionData);
-
-    boxRecurringCosts->addWidget(tblRecurringCosts);
-
 
     // =============================
     // User-level Settings Section
     // =============================
     boxUserSettings = new WGroupBox("User Settings");
-    hbox->addWidget(boxUserSettings);
+    divSettings->addWidget(boxUserSettings);
 
     // password label & field
     lblPassword = new WLabel("New Password:");
     txtPassword = new WLineEdit();
+    txtPassword->setEmptyText("update the existing password");
     txtPassword->setEchoMode(WLineEdit::EchoMode::Password);
     lblPassword->setBuddy(txtPassword);
     boxUserSettings->addWidget(lblPassword);
@@ -96,27 +81,147 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxUserSettings->addWidget(txtConfirmPassword);
 
     // fist name of user
-    lblFirstName = new WLabel("First Name:");
+    lblFirstName = new WLabel("Set First Name:");
     txtFirstName = new WLineEdit();
     lblFirstName->setBuddy(txtFirstName);
     boxUserSettings->addWidget(lblFirstName);
     boxUserSettings->addWidget(txtFirstName);
 
     // last name of user
-    lblLastName = new WLabel("Last Name:");
+    lblLastName = new WLabel("Set Last Name:");
     txtLastName = new WLineEdit();
     lblLastName->setBuddy(txtLastName);
     boxUserSettings->addWidget(lblLastName);
     boxUserSettings->addWidget(txtLastName);
 
     // save user settings
-    btnSaveUserSettings = new WPushButton("Save User Settings");
+    btnSaveUserSettings = new WPushButton("Update User Settings");
     btnSaveUserSettings->clicked().connect(this, &US_SettingsGUI::btnSaveUserSettings_Click);
     boxUserSettings->addWidget(btnSaveUserSettings);
 
     // user feedback on user settings
     lblMsgUser = new WLabel();
     boxUserSettings->addWidget(lblMsgUser);
+
+
+
+    // ==================================
+    // Recurring Transactions Table
+    // ==================================
+    boxTable = new WGroupBox("Recurring Transactions");
+    hbox_root->addWidget(boxTable, 1);
+
+    // table initialization
+    tblRecurringCosts = new WTable();
+    tblRecurringCosts->setHeaderCount(1);
+    tblRecurringCosts->setWidth(Wt::WLength("100%"));
+
+    // stlying table
+    tblRecurringCosts->addStyleClass("table form-inline");
+    tblRecurringCosts->addStyleClass("table-bordered");
+    tblRecurringCosts->addStyleClass("table-hover");
+    tblRecurringCosts->addStyleClass("table-striped");
+
+    // Populating Table
+    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date (yyyy-mm-dd)", "Frequency", "# of Repeats", "Delete"};
+    int numTransactions = 20; // TODO: replace
+    int numCols = headerRowVals.size(); // name | type | value | date | frequency | number of repeats | delete
+    for (int row = 0; row < numTransactions; row++) {
+        for (int col = 0; col < numCols; col++) {
+            if (col < (numCols - 1)) {
+                WText *cell = new WText();
+
+                if (row == 0) {
+                    cell->setText(headerRowVals.at(col));
+                } else {
+                    cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+                }
+
+                tblRecurringCosts->elementAt(row, col)->addWidget(cell);
+            } else {
+                if (row != 0) {
+                    // delete icon
+                    WImage* imgDelete = new WImage("resources/delete.png");
+                    imgDelete->setAttributeValue("row", boost::lexical_cast<string>(row));
+                    imgDelete->clicked().connect(std::bind([=] () {
+                        tblRecurringCosts->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")))->hide();
+                        // TODO: delete in database
+                    }));
+
+                    tblRecurringCosts->elementAt(row, col)->addWidget(imgDelete);
+                }
+            }
+        }
+    }
+
+//    tblRecurringCosts->setAlternatingRowColors(true);
+//    tblRecurringCosts->setSelectionMode(Wt::SingleSelection);
+//    tblRecurringCosts->setSortingEnabled(true);
+//    tblRecurringCosts->setHeaderHeight(0);
+//    tblRecurringCosts->setModel(parent->modelRecurringTransactionData);
+    boxTable->addWidget(tblRecurringCosts);
+
+
+
+    // ==================================
+    // Add Recurring Transactions Section
+    // ==================================
+    boxAddTransaction = new WGroupBox("Add Recurring Transaction");
+    hbox_root->addWidget(boxAddTransaction);
+
+    // name
+    lblName = new WLabel("Name of Transaction:");
+    txtName = new WLineEdit();
+    lblName->setBuddy(txtName);
+    boxAddTransaction->addWidget(lblName);
+    boxAddTransaction->addWidget(txtName);
+
+    // type
+    lblType = new WLabel("Type:");
+    txtType = new WLineEdit();
+    lblType->setBuddy(txtType);
+    boxAddTransaction->addWidget(lblType);
+    boxAddTransaction->addWidget(txtType);
+
+    // value
+    lblValue = new WLabel("Value ($):");
+    txtValue = new WLineEdit();
+    lblValue->setBuddy(txtValue);
+    boxAddTransaction->addWidget(lblValue);
+    boxAddTransaction->addWidget(txtValue);
+
+    // date
+    lblDate = new WLabel("Date of First Transaction:");
+    deDate = new WDateEdit();
+    deDate->setFormat("yyyy-MM-dd");
+    deDate->setDate(WDate::currentServerDate());
+    lblDate->setBuddy(deDate);
+    boxAddTransaction->addWidget(lblDate);
+    boxAddTransaction->addWidget(deDate);
+
+    // frequency
+    lblFrequency = new WLabel("Frequency:");
+    ddFrequency = new WComboBox();
+    ddFrequency->addItem("daily");
+    ddFrequency->addItem("weekly");
+    ddFrequency->addItem("monthly");
+    lblFrequency->setBuddy(ddFrequency);
+    boxAddTransaction->addWidget(lblFrequency);
+    boxAddTransaction->addWidget(ddFrequency);
+
+    // number of repeats
+    lblNumRepeats = new WLabel("Number of Repeats:");
+    spinNumRepeats = new WSpinBox();
+    spinNumRepeats->setMinimum(1);
+    spinNumRepeats->setSingleStep(1);
+    lblNumRepeats->setBuddy(spinNumRepeats);
+    boxAddTransaction->addWidget(lblNumRepeats);
+    boxAddTransaction->addWidget(spinNumRepeats);
+
+    // add transaction button
+    btnAddTransaction = new WPushButton("Add Recurring Transaction");
+    btnAddTransaction->clicked().connect(this, &US_SettingsGUI::btnAddTransaction_Click);
+    boxAddTransaction->addWidget(btnAddTransaction);
 }
 
 // event listener to save currently set project settings
@@ -134,8 +239,6 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
         lblMsgProject->setStyleClass("error");
         return;
     }
-
-    WDate date = deStartDate->date();
 
     lblMsgProject->setText("Success!");
     lblMsgProject->setStyleClass("message");
@@ -192,3 +295,12 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
         }
     }
 }
+
+void US_SettingsGUI::btnAddTransaction_Click() {
+
+}
+
+void US_SettingsGUI::btnDeleteTransaction_Click() {
+
+}
+

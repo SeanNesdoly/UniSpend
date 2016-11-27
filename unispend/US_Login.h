@@ -54,6 +54,8 @@ private:
     WLineEdit* txtNewUser;
     WLabel* lblNewPassword;
     WLineEdit* txtNewPassword;
+    WLabel* lblStartingBalance;
+    WLineEdit* txtStartingBalance;
     WLabel* lblFirstName;
     WLineEdit* txtFirstName;
     WLabel* lblLastName;
