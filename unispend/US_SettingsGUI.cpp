@@ -31,13 +31,6 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxProjectSettings = new WGroupBox("Project Settings");
     divSettings->addWidget(boxProjectSettings);
 
-    // project name
-    lblProjectName = new WLabel("Project Name:");
-    txtProjectName = new WLineEdit();
-    lblProjectName->setBuddy(txtProjectName);
-    boxProjectSettings->addWidget(lblProjectName);
-    boxProjectSettings->addWidget(txtProjectName);
-
     // main project starting balance
     lblStartBalance = new WLabel("Budget for the School Year:");
     txtStartBalance = new WLineEdit();
@@ -227,7 +220,6 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 // event listener to save currently set project settings
 void US_SettingsGUI::btnSaveProjectSettings_Click() {
     // TODO: insert into database
-    string projectName = txtProjectName->text().toUTF8();
 
     // parse starting balance from widget
     double startingBalance;
@@ -245,9 +237,9 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
     // Update the project settings
     // Update the yearly balance
     _user->getMain().updateBalance(startingBalance);
-    ostringstream dateFormatter;
-    dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
-    cout << dateFormatter.str() << endl;
+    //ostringstream dateFormatter;
+    //dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
+    //cout << dateFormatter.str() << endl;
     cout << "MAIN PROJECT: " << endl;
     cout << "Get current monthly allowance: " << endl;
     cout << _user->getMain().getMonthlyAllowance() << endl;

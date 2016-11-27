@@ -50,8 +50,6 @@ private:
 
     // Project Settings
     WGroupBox* boxProjectSettings;
-    WLabel* lblProjectName;
-    WLineEdit* txtProjectName;
     WLabel* lblStartBalance;
     WLineEdit* txtStartBalance;
     WPushButton* btnSaveProjectSettings;
