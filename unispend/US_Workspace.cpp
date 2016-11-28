@@ -114,3 +114,9 @@ void US_Workspace::btnLogout_Clicked() {
     US_Login *newLoginContainer = new US_Login(root);
     root->addWidget(newLoginContainer);
 }
+
+WMenuItem* US_Workspace::getLogoutLabel()
+{
+    return logout;
+}
+
