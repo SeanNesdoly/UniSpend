@@ -23,6 +23,7 @@
 #include <Wt/WSpinBox>
 #include <Wt/WTable>
 #include <Wt/WImage>
+#include <Wt/WTableRow>
 
 #include <string>
 #include "US_Workspace.h"
@@ -36,12 +37,14 @@ public:
     US_SettingsGUI(US_Workspace *parent);
 private:
     User* _user;
+    US_Workspace *workspace;
+
+    void populateTable();
 
     // event handlers
     void btnSaveProjectSettings_Click();
     void btnSaveUserSettings_Click();
     void btnAddTransaction_Click();
-    void btnDeleteTransaction_Click();
 
     // WIDGETS
     WHBoxLayout* hbox_root;

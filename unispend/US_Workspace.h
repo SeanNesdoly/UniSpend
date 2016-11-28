@@ -22,6 +22,7 @@
 #include <Wt/WLength>
 #include <Wt/WDate>
 #include <vector>
+#include <string>
 
 #include "US_Login.h"
 #include "US_User.h"
@@ -33,9 +34,9 @@ class US_Workspace : public WContainerWidget
 public:
     US_Workspace(WContainerWidget *parent, User *user);
     User *user; // authenticated user persisted throughout the application session
+    WMenuItem *currentBalance; // current balance for the user
+
     WStandardItemModel* modelTransactionData;
-    WStandardItemModel* modelForecastingData;
-    WStandardItemModel* modelRecurringTransactionData;
 private:
     WContainerWidget* root; // root widget of the application
 
@@ -48,5 +49,4 @@ private:
     WMenu *leftMenu; // left aligned menu that contains each tab container
     WMenu *rightMenu; // right aligned menu that contains the logout button
     WMenuItem *logout; // logout button within the navigation bar menu
-    WMenuItem *currentBalance; // current balance for the user
 };

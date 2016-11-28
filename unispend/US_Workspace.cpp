@@ -65,7 +65,7 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
 
     // create the navigation bar
     navigationBar = new WNavigationBar();
-    navigationBar->setTitle("UniSpend"); // TODO: add in project name
+    navigationBar->setTitle("UniSpend");
     navigationBar->setResponsive(true);
     addWidget(navigationBar);
 
@@ -87,13 +87,20 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
     rightMenu = new WMenu();
     navigationBar->addMenu(rightMenu, AlignRight);
 
-    currentBalance = new WMenuItem("Balance on " + WDate::currentDate().toString().toUTF8() + ": "); // TODO: add current balance
-    currentBalance->setSelectable(false);
-    currentBalance->setPadding(WLength(30), Wt::Side::Right);
-    rightMenu->addItem(currentBalance);
+    // current balance for the user
+    if (user != nullptr) {
+        currentBalance = new WMenuItem("Balance on " + WDate::currentDate().toString().toUTF8() + ": " + boost::lexical_cast<string>(user->getMain().getCurrentBalance()));
+        currentBalance->setCanReceiveFocus(false);
+        currentBalance->setSelectable(false);
+        currentBalance->setPadding(WLength(30), Wt::Side::Right);
+        rightMenu->addItem(currentBalance);
+    }
 
     // logout onclick widget
-    logout = new WMenuItem("Logout, ");//user->getFirstName() + " " + user->getLastName()); TODO: remove
+    logout = new WMenuItem("Logout");
+    if (user != nullptr) {
+        logout->setText("Logout, " + user->getFirstName() + " " + user->getLastName());
+    }
     logout->clicked().connect(this, &US_Workspace::btnLogout_Clicked);
     rightMenu->addItem(logout);
 

@@ -34,8 +34,16 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     // current scenario selection
     lblScenario = new WLabel("Current Scenario:");
     listScenarios = new WComboBox();
-    // TODO: get scenarios!
+    if (_user != nullptr) {
+        vector<US_Project> scenarios = _user->getScenarios();
 
+        if (scenarios.size() > 0)
+            currScenario = &scenarios.at(0); // set the currently selected scenario
+
+        for (int i = 0; i < scenarios.size(); i++) {
+            listScenarios->addItem(scenarios.at(i).getProjectName());
+        }
+    }
     listScenarios->changed().connect(this, &US_ForecastGUI::listScenarios_Changed);
     lblScenario->setBuddy(listScenarios);
     boxForecastParams->addWidget(lblScenario);
@@ -52,7 +60,16 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblTargetDate = new WLabel("Target Date:");
     deTargetDate = new WDateEdit();
     deTargetDate->setFormat("yyyy-MM-dd");
-    deTargetDate->setDate(WDate::currentServerDate()); // TODO: from database
+    if (_user != nullptr && this->currScenario != nullptr) {
+        string  strTargetDate = this->currScenario->getStartDate(); // TODO:: target date
+        int year = boost::lexical_cast<int>(strTargetDate.substr(0,4));
+        int month = boost::lexical_cast<int>(strTargetDate.substr(5,2));
+        int day = boost::lexical_cast<int>(strTargetDate.substr(8,2));
+        WDate targetDate = WDate(year, month, day);
+        deTargetDate->setDate(targetDate);
+    } else
+        deTargetDate->setDate(WDate::currentServerDate());
+
     lblTargetDate->setBuddy(deTargetDate);
     boxForecastParams->addWidget(lblTargetDate);
     boxForecastParams->addWidget(deTargetDate);
@@ -91,7 +108,7 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblNewTargetDate = new WLabel("New Scenario Target Date:");
     deNewTargetDate = new WDateEdit();
     deNewTargetDate->setFormat("yyyy-MM-dd");
-    deNewTargetDate->setDate(WDate::currentServerDate()); // TODO: from database
+    deNewTargetDate->setDate(WDate::currentServerDate().addDays(1));
     lblNewTargetDate->setBuddy(deNewTargetDate);
     boxCreateScenario->addWidget(lblNewTargetDate);
     boxCreateScenario->addWidget(deNewTargetDate);
@@ -113,8 +130,10 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     boxScenarioContent = new WGroupBox("Scenario Transactions");
     hbox->addWidget(boxScenarioContent, 1); // add section to tab container
 
-    lblScenarioRange = new WLabel("<b>Scenario Transactions in the Range: </b>"); // TODO: add in scenario date range
-    boxScenarioContent->addWidget(lblScenarioRange);
+    if (_user != nullptr && currScenario != nullptr) {
+        lblScenarioRange = new WLabel("<b>Scenario Transactions are in the range: </b>" + currScenario->getStartDate() + " - "); // TODO: add in scenario date range
+        boxScenarioContent->addWidget(lblScenarioRange);
+    }
 
     tblScenarioData = new WTable();
     tblScenarioData->setHeaderCount(1);
@@ -143,17 +162,7 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
             tblScenarioData->elementAt(row, col)->addWidget(cell);
         }
     }
-
     boxScenarioContent->addWidget(tblScenarioData);
-
-    /*tblScenarioData = new WTableView();
-    tblScenarioData->setAlternatingRowColors(true);
-    tblScenarioData->setSelectionMode(Wt::NoSelection);
-    tblScenarioData->setSortingEnabled(true);
-    tblScenarioData->setHeaderHeight(0);
-    tblScenarioData->setModel(parent->modelForecastingData);
-    hbox->addWidget(tblScenarioData, 1);*/
-
 
 
     // ==========================
@@ -165,7 +174,7 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     // progress bar for money spent @ target date
     //lblMoneySpent = new WLabel("<b>Current $ allocation towards target balance:</b>");
     barMoneySpent = new WProgressBar();
-    barMoneySpent->setFormat("Leftover $ towards target balance %.0f %%");
+    barMoneySpent->setFormat("Leftover $ towards target balance: %.0f %%");
     barMoneySpent->resize(Wt::WLength("100%"),100);
     barMoneySpent->setRange(0,100); // TODO: from database
     barMoneySpent->setValue(69); // TODO: from database
@@ -184,16 +193,16 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblSpendingWithScenario = new WLabel("Average ($/day) during school year:");
     txtSpendingWithScenario = new WLineEdit();
     txtSpendingWithScenario->setEnabled(false);
-    txtSpendingWithScenario->setText("$ AVG_SPENDING_WITH_SCENARIO");
+    txtSpendingWithScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
     lblSpendingWithScenario->setBuddy(txtSpendingWithScenario);
     boxScenarioAnalysis->addWidget(lblSpendingWithScenario);
     boxScenarioAnalysis->addWidget(txtSpendingWithScenario);
 
     // average spending WITHOUT scenario costs applied
-    lblSpendingWithoutScenario = new WLabel("Average ($/day) since addition of Scenario:"); // TODO: scenario name
+    lblSpendingWithoutScenario = new WLabel("Average ($/day) since addition of Scenario:");
     txtSpendingWithoutScenario = new WLineEdit();
     txtSpendingWithoutScenario->setEnabled(false);
-    txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
+    txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITH_SCENARIO");
     lblSpendingWithoutScenario->setBuddy(txtSpendingWithoutScenario);
     boxScenarioAnalysis->addWidget(lblSpendingWithoutScenario);
     boxScenarioAnalysis->addWidget(txtSpendingWithoutScenario);
@@ -203,6 +212,20 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
 void US_ForecastGUI::listScenarios_Changed() {
     string selectedScenario = listScenarios->currentText().toUTF8();
     // TODO: fetch selected scenario from the database & update target balance & date
+    vector<US_Project> scenarios = _user->getScenarios();
+
+    for (int i = 0; i < scenarios.size(); i++) {
+        if (scenarios.at(i).getProjectName() == selectedScenario && _user->getName() == scenarios.at(i).getUsername()) {
+            this->currScenario = &scenarios.at(i);
+        }
+    }
+
+    string  strTargetDate = this->currScenario->getStartDate(); // TODO: target date
+    int year = boost::lexical_cast<int>(strTargetDate.substr(0,4));
+    int month = boost::lexical_cast<int>(strTargetDate.substr(5,2));
+    int day = boost::lexical_cast<int>(strTargetDate.substr(8,2));
+    WDate targetDate = WDate(year, month, day);
+    deTargetDate->setDate(targetDate);
 }
 
 // update the current scenario's target balance and date
