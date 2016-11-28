@@ -41,6 +41,7 @@ public:
     vector<US_Transaction> getTypeTransactions(string type);
     void addTransaction(US_Transaction);
     void deleteTransaction(US_Transaction oldTransaction);
+    void deleteRepeatTransaction(string name, string type, double value);
     double sumAllTransactions(vector<US_Transaction>);
     double getAverage(vector<US_Transaction>);
     double getRequiredRate();

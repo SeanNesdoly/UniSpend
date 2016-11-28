@@ -328,6 +328,28 @@ void US_Project::deleteTransaction(US_Transaction trans){
     }
 }
 
+void US_Project::deleteRepeatTransaction(string name, string type, double value){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+
+    std::ostringstream stringVal; //new monthly Allowance
+    stringVal << value;
+    string sqlCommand = "DELETE from `transactions WHERE `username` = '" +username+ "' AND `name` = '" +name+"' AND `type` = '"+type+"' AND `value` = '"+stringVal.str()+"' AND `isRecurring` = '1'";
+    try{
+        stmt->execute(sqlCommand);
+    }catch(sql::SQLException e){
+        cout << e.what() <<endl;
+    }
+
+
+}
+
 
 vector<US_Transaction> US_Project::getAllTransactions(){
     sql::mysql::MySQL_Driver *driver;
