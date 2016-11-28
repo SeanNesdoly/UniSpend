@@ -56,7 +56,18 @@ input[type="password"] {
 
 /* Transactions Tab */
 .transaction {
+	padding-left: 20px;
+}
 
+.transaction select { /* WComboox */
+	width: 300px;
+	margin-bottom: 50px;
+}
+
+.transaction input[type=="text"] { /* WLineEdit */
+	width: 300px;
+	margin-bottom: 10px;
+	display: block;
 }
 
 /* Forecasting Tab */
