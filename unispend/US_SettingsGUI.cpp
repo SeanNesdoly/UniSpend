@@ -221,7 +221,7 @@ void US_SettingsGUI::populateTable() {
                         switch(col) {
                             case 0 : cell->setText(currTransaction->getName());
                             case 1 : cell->setText(currTransaction->getType());
-                            case 2 : cell->setText(boost::lexical_cast<string>(currTransaction->getValue()));
+                            case 2 : cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
                             case 3 : cell->setText(currTransaction->getDate());
                             default: cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
                         }
@@ -233,7 +233,7 @@ void US_SettingsGUI::populateTable() {
                     if (row != 0) {
                         // delete icon
                         WImage* imgDelete = new WImage("resources/delete.png");
-                        imgDelete->setAttributeValue("row", boost::lexical_cast<string>(row));
+                        imgDelete->setAttributeValue("row", boost::lexical_cast<std::string>(row));
                         imgDelete->clicked().connect(std::bind([=] () {
                             WTableRow* theRow = tblRecurringCosts->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
                             theRow->hide();
@@ -269,7 +269,7 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
     // Update the yearly balance
     _user->updateBalance(startingBalance);
 
-    this->workspace->currentBalance->setText("Balance on " + WDate::currentDate().toString().toUTF8() + ": " + boost::lexical_cast<string>(_user->getMain().getCurrentBalance()));
+    this->workspace->currentBalance->setText("Balance on " + WDate::currentDate().toString().toUTF8() + ": " + boost::lexical_cast<std::string>(_user->getMain().getCurrentBalance()));
 
     cout << "MAIN PROJECT: " << endl;
     cout << "Get current monthly allowance: " << endl;

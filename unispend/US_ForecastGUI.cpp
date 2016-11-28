@@ -60,7 +60,7 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblTargetDate = new WLabel("Target Date:");
     deTargetDate = new WDateEdit();
     deTargetDate->setFormat("yyyy-MM-dd");
-    if (_user != nullptr && this->currScenario != nullptr) {
+    /*if (_user != nullptr && this->currScenario != nullptr) {
         string  strTargetDate = this->currScenario->getStartDate(); // TODO:: target date
         int year = boost::lexical_cast<int>(strTargetDate.substr(0,4));
         int month = boost::lexical_cast<int>(strTargetDate.substr(5,2));
@@ -68,7 +68,8 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
         WDate targetDate = WDate(year, month, day);
         deTargetDate->setDate(targetDate);
     } else
-        deTargetDate->setDate(WDate::currentServerDate());
+        deTargetDate->setDate(WDate::currentServerDate());*/
+    deTargetDate->setDate(WDate::currentServerDate());
 
     lblTargetDate->setBuddy(deTargetDate);
     boxForecastParams->addWidget(lblTargetDate);
