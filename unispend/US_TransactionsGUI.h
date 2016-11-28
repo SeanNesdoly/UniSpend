@@ -74,7 +74,7 @@ private:
 	
 	//Add Transaction widgets
 	WLabel* lblAddDate;
-	WLineEdit* txtAddDate;
+	WDateEdit* deAddDate;
 	WLabel* lblAddType;
 	WLineEdit* txtAddType;
 	WLabel* lblAddDescription;
