@@ -101,7 +101,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
             rowData++;
         }
     }
-
+/*
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);
@@ -112,7 +112,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
         barch->addSeries(series);
     }
     barch->resize(300, 200);
-
+*/
     //Add Pie chart
     piech = new Wt::Chart::WPieChart(this);
     piech->setModel(model);
