@@ -34,6 +34,7 @@ public:
     void setValue(const double value);
     void setProjectName(const string projectName);
     void setRecurring(const string recurring);
+    void setID(const string ID);
 //    void setDate(const boost::gregorian::date date);
 
 

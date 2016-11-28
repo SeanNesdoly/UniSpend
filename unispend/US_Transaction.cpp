@@ -36,6 +36,10 @@ void US_Transaction::setRecurring(const string recurring){
     this->recurring = recurring;
 }
 
+void US_Transaction::setID(const string ID){
+    this->id = ID;
+}
+
 //void US_Transaction::setDate(const boost::gregorian::date date){
 //    this->date = date;
 //}
