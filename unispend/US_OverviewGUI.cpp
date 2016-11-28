@@ -108,7 +108,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     barch->setXSeriesColumn(0);
     Lvbox->addWidget(barch,1);
     for (int column = 1; column < model->columnCount(); ++column) {
-        Wt::Chart::WDataSeries *series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries);
+        Wt::Chart::WDataSeries *series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries,Wt::Chart::Axis::Y1Axis);
         barch->addSeries(series);
     }
     barch->resize(300, 200);
