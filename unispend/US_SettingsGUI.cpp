@@ -219,10 +219,18 @@ void US_SettingsGUI::populateTable() {
 
                         // set the cells text
                         switch(col) {
-                            case 0 : cell->setText(currTransaction->getName());
-                            case 1 : cell->setText(currTransaction->getType());
-                            case 2 : cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
-                            case 3 : cell->setText(currTransaction->getDate());
+                            case 0 :
+                                cell->setText(currTransaction->getName());
+                                break;
+                            case 1 :
+                                cell->setText(currTransaction->getType());
+                                break;
+                            case 2 :
+                                cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
+                                break;
+                            case 3 :
+                                cell->setText(currTransaction->getDate());
+                                break;
                             default: cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
                         }
                     }
@@ -360,6 +368,7 @@ void US_SettingsGUI::btnAddTransaction_Click() {
     else {
         _user->getMain().repeatTransaction(_user->getName(), name, type, value, date, "main", frequency, numRepeats);
 
+        this->tblRecurringCosts->clear();
         populateTable(); // update the table
     }
 }
