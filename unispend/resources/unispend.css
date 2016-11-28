@@ -126,14 +126,11 @@ input[type="password"] {
 
 .overview span{ /* WLineEdit */
     padding-left: 20px;
+    padding-right: 20px;
 }
 
 .overview button{
     width: 100px;
-}
-
-.overview-pie{
-    padding: 10px;
 }
 
 .overview canvas{

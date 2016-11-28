@@ -16,12 +16,17 @@
 #include <Wt/WDateEdit>
 #include <Wt/WDate>
 #include <Wt/WPushButton>
-using namespace Wt;
+#include <algorithm>
+#include "US_User.h"
+#include "US_Workspace.h"
 
+using namespace Wt;
+using namespace std;
 class US_OverviewGUI : public WContainerWidget{
 public:
-    US_OverviewGUI(WContainerWidget *parent);
+    US_OverviewGUI(US_Workspace *parent);
 private:
+    User* _user;
     void btnSave_Click();
     Wt::Chart::WPieChart* piech;
     Wt::Chart::WCartesianChart* barch;
@@ -30,6 +35,7 @@ private:
     WStandardItemModel* model;
     WLabel* lblStartDate;
     WLabel* lblEndDate;
+    WLabel* lblMsg;
     WDateEdit* StartDate;
     WDateEdit* EndDate;
     WHBoxLayout* overhbox;

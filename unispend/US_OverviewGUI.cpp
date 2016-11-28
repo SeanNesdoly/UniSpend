@@ -1,12 +1,12 @@
 //
 // Created by Ryan Fredrickson on 2016-11-17.
 //
-
 #include "US_OverviewGUI.h"
 
-US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
+US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
         WContainerWidget(parent)
 {
+    _user = parent->user;
     //Set Style
     setStyleClass("overview");
     //Add the boxes for layout
@@ -64,39 +64,43 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
     btnSave = new WPushButton("Go");
     btnSave->clicked().connect(this, &US_OverviewGUI::btnSave_Click);
     datehbox->addWidget(btnSave);
+    //Message if date is wrong
+    lblMsg = new WLabel();
+    Lvbox->addWidget(lblMsg);
 
 
-    piech = new Wt::Chart::WPieChart(this);
+    string stardate = StartDate->text().toUTF8();
+    string endate = EndDate->text().toUTF8();
+    vector<US_Transaction> Transactions=_user->getMain().getAllTransactions(stardate,endate);
+    int s=Transactions.size();
+    vector<string> typeexpenses= {};
+    vector<double> valueexp={};
     model = new WStandardItemModel(this);
     //headers
     model->insertColumns(model->columnCount(), 2);
-    model->setHeaderData(0, WString("Item"));
-    model->setHeaderData(1, WString("Sales"));
-    //data
-    model->insertRows(model->rowCount(), 6);
-    int row = 0;
-    model->setData(row, 0, WString("Blueberry"));
-    model->setData(row, 1, 120);
-    // model->setData(row, 1, WString("Blueberry"), ToolTipRole);
-    row++;
-    model->setData(row, 0, WString("Cherry"));
-    model->setData(row, 1, 30);
-    row++;
-    model->setData(row, 0, WString("Apple"));
-    model->setData(row, 1, 260);
-    row++;
-    model->setData(row, 0, WString("Boston Cream"));
-    model->setData(row, 1, 160);
-    row++;
-    model->setData(row, 0, WString("Other"));
-    model->setData(row, 1, 40);
-    row++;
-    model->setData(row, 0, WString("Vanilla Cream"));
-    model->setData(row, 1, 120);
+    model->setHeaderData(0, WString("Expense_Type"));
+    model->setHeaderData(1, WString("Amount"));
+    int rowData=0;
 
-
-
-
+    for(int i=0; i<s; i++){
+        string type=Transactions.at(i).getType();
+        double val=Transactions.at(i).getValue();
+        if (std::find(typeexpenses.begin(), typeexpenses.end(), type) != typeexpenses.end())
+        {
+            int pos = std::find(typeexpenses.begin(), typeexpenses.end(), type) - typeexpenses.begin();
+            double sum=valueexp.at(pos);
+            sum +=val;
+            model->setData(pos, 1, sum);
+        }
+        else{
+            typeexpenses.push_back(type);
+            valueexp.push_back(val);
+            model->setData(rowData, 0, WString(type));
+            model->setData(rowData, 1, val);
+            rowData++;
+        }
+    }
+    /*
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);
@@ -106,10 +110,10 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
         Wt::Chart::WDataSeries *series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries);
         barch->addSeries(series);
     }
-    piech->setStyleClass("overview-pie");
     barch->resize(300, 200);
-
+    */
     //Add Pie chart
+    piech = new Wt::Chart::WPieChart(this);
     piech->setModel(model);
     piech->setLabelsColumn(0);    // set the column that holds the labels
     piech->setDataColumn(1);      // set the column that holds the data
@@ -120,7 +124,7 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
     piech->resize(600, 300);
     Rvbox->addWidget(piech);
 
-    //Add scatter plot
+    /*//Add scatter plot
     scatch = new Wt::Chart::WCartesianChart(this);
     scatch->setBackground(Wt::WColor(220, 220, 220));
     scatch->setModel(model);
@@ -132,26 +136,15 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
         scatch->addSeries(s);
     }
     scatch->resize(500, 300);
-    Rvbox->addWidget(scatch,1);
+    Rvbox->addWidget(scatch,1);*/
 }
 
 void US_OverviewGUI::btnSave_Click() {
-    /*// TODO: insert into database
-
-    bool failure = false;
-    string pass = txtPassword->text().toUTF8();
-    string confirmPass = txtConfirmPassword->text().toUTF8();
-    if (pass != confirmPass) {
-        lblMsgUser->setText("Passwords do not match!");
-        lblMsgUser->setStyleClass("error");
-        failure = true;
+    if(StartDate<EndDate){
+        lblMsg->setText("End Date must be grater than start date");
+        return;
     }
-
-    string fName = txtFirstName->text().toUTF8();
-    string lName = txtLastName->text().toUTF8();
-
-    if (!failure) {
-        lblMsgUser->setText("Success!");
-        lblMsgUser->setStyleClass("message");
-    }*/
+    string sdate = StartDate->text().toUTF8();
+    string edate = EndDate->text().toUTF8();
 }
+
