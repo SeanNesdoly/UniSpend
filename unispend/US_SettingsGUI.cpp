@@ -231,12 +231,18 @@ void US_SettingsGUI::populateTable() {
                             case 3 :
                                 cell->setText(currTransaction->getDate());
                                 break;
-                            default: cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+                            case 4:
+                                // TODO: add in frequency column
+                            case 5:
+                                // TODO: add in # of repeats column
+                            default:
+                                cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
                         }
                     }
 
                     // add the cell to the table
                     tblRecurringCosts->elementAt(row, col)->addWidget(cell);
+                    //tblRecurringCosts->elementAt(row, col)
                 } else {
                     if (row != 0) {
                         // delete icon
@@ -245,11 +251,14 @@ void US_SettingsGUI::populateTable() {
                         imgDelete->clicked().connect(std::bind([=] () {
                             WTableRow* theRow = tblRecurringCosts->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
                             theRow->hide();
-                            //string name = boost::lexical_cast<string>(theRow->elementAt(0)->widget(0)).text().toUTF8();
-                            //string type = boost::lexical_cast<string>(theRow->elementAt(0)->widget(0)).text().toUTF8();
-                            // TODO: delete in database
 
+                            // retrieve column values
+                            string name = dynamic_cast<WText>(theRow->elementAt(0)->widget(0)).text().toUTF8();
+                            string type = dynamic_cast<WText>(theRow->elementAt(1)->widget(0)).text().toUTF8();
+                            double value = boost::lexical_cast<double>(dynamic_cast<WText>(theRow->elementAt(2)->widget(0)).text());
 
+                            // TODO: delete recurring transaction in database
+                            _user->getMain().deleteRepeatTransaction(name, type, value);
                         }));
 
                         tblRecurringCosts->elementAt(row, col)->addWidget(imgDelete);
