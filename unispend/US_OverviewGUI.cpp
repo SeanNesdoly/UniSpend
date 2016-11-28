@@ -101,7 +101,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
             rowData++;
         }
     }
-    
+
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);

@@ -27,6 +27,7 @@
 #include <Wt/WStandardItemModel>
 #include <Wt/WStandardItem>
 #include <Wt/WTableView>
+#include <Wt/Chart/WDataSeries>
 
 using namespace Wt;
 using namespace std;
