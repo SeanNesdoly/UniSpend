@@ -316,12 +316,15 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
             {
                 // Update the first name
                 _user->setFirstName(fName);
+                // Update the logout label
+                workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
             }
 
             if (lName.size() != 0)
             {
                 // Update the last name
                 _user->setLastName(lName);
+                workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
             }
            // If got here - values successfully updated
            lblMsgUser->setText("Success!");

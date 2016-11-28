@@ -35,7 +35,7 @@ public:
     US_Workspace(WContainerWidget *parent, User *user);
     User *user; // authenticated user persisted throughout the application session
     WMenuItem *currentBalance; // current balance for the user
-
+    WMenuItem* getLogoutLabel();
     WStandardItemModel* modelTransactionData;
 private:
     WContainerWidget* root; // root widget of the application
