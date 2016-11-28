@@ -23,6 +23,7 @@
 #include <Wt/WVBoxLayout>
 #include <Wt/WProgressBar>
 #include <Wt/WTable>
+#include <string>
 
 #include "US_Workspace.h"
 #include "US_User.h"
