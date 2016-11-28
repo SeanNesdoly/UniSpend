@@ -17,11 +17,13 @@
 #include <Wt/WLabel>
 #include <Wt/WComboBox>
 #include <Wt/WDateEdit>
+#include <Wt/WDate>
 #include <Wt/WPushButton>
 #include <Wt/WHBoxLayout>
 #include <Wt/WVBoxLayout>
 #include <Wt/WProgressBar>
 #include <Wt/WTable>
+#include <string>
 
 #include "US_Workspace.h"
 #include "US_User.h"
@@ -34,7 +36,7 @@ public:
     US_ForecastGUI(US_Workspace *parent);
 private:
     User* _user;
-    //US_Project currScenario; // currently selected scenario
+    US_Project* currScenario; // currently selected scenario
 
     // event handlers
     void listScenarios_Changed(); // keep track of the currently selected scenario

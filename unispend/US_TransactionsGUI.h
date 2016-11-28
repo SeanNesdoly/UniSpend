@@ -9,6 +9,8 @@
 */
 
 #pragma once
+#include <stdlib.h>
+#include <iostream>
 
 #include <Wt/WContainerWidget>
 #include <Wt/WApplication>
@@ -18,6 +20,18 @@
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
 
+#include <Wt/WTable>
+#include <Wt/WTableCell>
+#include <Wt/WLineEdit>
+#include <Wt/WText>
+
+
+#include <Wt/WHBoxLayout>
+#include <Wt/WGroupBox>
+
+#include "US_Workspace.h"
+#include "US_User.h"
+#include "US_Project.h"
 
 using namespace std;
 using namespace Wt;
@@ -25,29 +39,52 @@ using namespace Wt;
 class US_TransactionsGUI : public WContainerWidget
 {
 public:
-	US_TransactionsGUI(WContainerWidget *parent);
+	US_TransactionsGUI(US_Workspace *parent);
+	//US_TransactionsGUI(WContainerWidget *parent);
 	
+	void btnAddTransaction_Click();
+	void listDateRange_Change();
+	void LoadTable();
+
 	void handleInternalPath(const string &internalPath);
 
 private:
+
+	User* _user;
+
 	void btnAdd_Clicked();
 	void btnEdit_Clicked();
-	
-	WLabel* title;
-	WLabel* test;
-	WLabel* lblError;
-	WPushButton* btnAdd;
+		
 	WPushButton* btnEdit;
 	WContainerWidget* newUserContainer;
+	
+	WHBoxLayout* hbox;
+	WContainerWidget* divLeft;
+	WContainerWidget* divRight;	
+	
+	WGroupBox* boxDateRange;
+	WGroupBox* boxAddTransaction;
+	WGroupBox* boxTransactionsTable;
+
 	WTable* table;
+	WTable* tblTransactions;
+
 	WLabel* lblAddTransaction;
 	WLineEdit* txtAddTransaction;
+	
+	//Add Transaction widgets
 	WLabel* lblAddDate;
 	WLineEdit* txtAddDate;
+	WLabel* lblAddType;
+	WLineEdit* txtAddType;
 	WLabel* lblAddDescription;
 	WLineEdit* txtAddDescription;
 	WLabel* lblAddCost;
 	WLineEdit* txtAddCost;
 	WPushButton* btnAddTransaction;
-	WHBoxLayout* hbox;
+	
+
+	//Date Range Selection
+	WLabel* lblDateRange;
+	WComboBox* listDateRange;
 };

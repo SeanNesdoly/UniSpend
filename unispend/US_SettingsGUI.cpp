@@ -10,12 +10,12 @@
 
 #include "US_SettingsGUI.h"
 
-#include <sstream>
 
 US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 {
     // retrieve the global user object from the parent workspace container
-    _user = parent->user;
+    workspace = parent;
+    _user = workspace->user;
 
     setStyleClass("settings");
     hbox_root = new WHBoxLayout();
@@ -115,37 +115,7 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     tblRecurringCosts->addStyleClass("table-hover");
     tblRecurringCosts->addStyleClass("table-striped");
 
-    // Populating Table
-    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date (yyyy-mm-dd)", "Frequency", "# of Repeats", "Delete"};
-    int numTransactions = 20; // TODO: replace
-    int numCols = headerRowVals.size(); // name | type | value | date | frequency | number of repeats | delete
-    for (int row = 0; row < numTransactions; row++) {
-        for (int col = 0; col < numCols; col++) {
-            if (col < (numCols - 1)) {
-                WText *cell = new WText();
-
-                if (row == 0) {
-                    cell->setText(headerRowVals.at(col));
-                } else {
-                    cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
-                }
-
-                tblRecurringCosts->elementAt(row, col)->addWidget(cell);
-            } else {
-                if (row != 0) {
-                    // delete icon
-                    WImage* imgDelete = new WImage("resources/delete.png");
-                    imgDelete->setAttributeValue("row", boost::lexical_cast<string>(row));
-                    imgDelete->clicked().connect(std::bind([=] () {
-                        tblRecurringCosts->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")))->hide();
-                        // TODO: delete in database
-                    }));
-
-                    tblRecurringCosts->elementAt(row, col)->addWidget(imgDelete);
-                }
-            }
-        }
-    }
+    populateTable(); // populates the table from the database with recurring transactions!
 
 //    tblRecurringCosts->setAlternatingRowColors(true);
 //    tblRecurringCosts->setSelectionMode(Wt::SingleSelection);
@@ -222,10 +192,77 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     boxAddTransaction->addWidget(lblMsgTransaction);
 }
 
+// populate the recurring transactions table
+void US_SettingsGUI::populateTable() {
+    if (_user != nullptr) {
+        vector<US_Transaction> allTransactions = _user->getMain().getAllTransactions();
+        US_Transaction *currTransaction = nullptr;
+
+
+        vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date (yyyy-mm-dd)", "Frequency", "# of Repeats", "Delete"};
+        int numTransactions = allTransactions.size();// TODO: replace
+        int numCols = headerRowVals.size(); // name | type | value | date | frequency | number of repeats | delete
+        for (int row = 0; row < numTransactions; row++) {
+
+            if (row != 0) {
+                // update the current transaction for the row
+                currTransaction = &allTransactions.at(row - 1);
+            }
+
+            for (int col = 0; col < numCols; col++) {
+                if (col < (numCols - 1)) {
+                    WText *cell = new WText();
+
+                    if (row == 0) {
+                        cell->setText(headerRowVals.at(col));
+                    } else {
+
+                        // set the cells text
+                        switch(col) {
+                            case 0 :
+                                cell->setText(currTransaction->getName());
+                                break;
+                            case 1 :
+                                cell->setText(currTransaction->getType());
+                                break;
+                            case 2 :
+                                cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
+                                break;
+                            case 3 :
+                                cell->setText(currTransaction->getDate());
+                                break;
+                            default: cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
+                        }
+                    }
+
+                    // add the cell to the table
+                    tblRecurringCosts->elementAt(row, col)->addWidget(cell);
+                } else {
+                    if (row != 0) {
+                        // delete icon
+                        WImage* imgDelete = new WImage("resources/delete.png");
+                        imgDelete->setAttributeValue("row", boost::lexical_cast<std::string>(row));
+                        imgDelete->clicked().connect(std::bind([=] () {
+                            WTableRow* theRow = tblRecurringCosts->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
+                            theRow->hide();
+                            //string name = boost::lexical_cast<string>(theRow->elementAt(0)->widget(0)).text().toUTF8();
+                            //string type = boost::lexical_cast<string>(theRow->elementAt(0)->widget(0)).text().toUTF8();
+                            // TODO: delete in database
+
+
+                        }));
+
+                        tblRecurringCosts->elementAt(row, col)->addWidget(imgDelete);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 // event listener to save currently set project settings
 void US_SettingsGUI::btnSaveProjectSettings_Click() {
-    // TODO: insert into database
-
     // parse starting balance from widget
     double startingBalance;
     try {
@@ -237,29 +274,21 @@ void US_SettingsGUI::btnSaveProjectSettings_Click() {
         return;
     }
 
-    lblMsgProject->setText("Success!");
-    lblMsgProject->setStyleClass("message");
-    // Update the project settings
     // Update the yearly balance
     _user->updateBalance(startingBalance);
 
-    //ostringstream dateFormatter;
-    //dateFormatter << date.year() << "-" << date.month() << "-" << date.day();
-    //cout << dateFormatter.str() << endl;
+    this->workspace->currentBalance->setText("Balance on " + WDate::currentDate().toString().toUTF8() + ": " + boost::lexical_cast<std::string>(_user->getMain().getCurrentBalance()));
+
     cout << "MAIN PROJECT: " << endl;
     cout << "Get current monthly allowance: " << endl;
     cout << _user->getMain().getMonthlyAllowance() << endl;
-    /*
-    cout << "Current start date" << endl;
-    cout << _user->getMain().getStartDate() << endl;
-    cout << "Current username " << endl;
-    cout << _user->getMain().getUsername() << endl;
-    */
+
+    lblMsgProject->setText("Success!");
+    lblMsgProject->setStyleClass("message");
 }
 
 // event listener to save currently set user settings
 void US_SettingsGUI::btnSaveUserSettings_Click() {
-    // TODO: insert into database
     bool failure = false;
 
     string pass = txtPassword->text().toUTF8();
@@ -276,13 +305,28 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
     if (!failure) {
         try
         {
-            // Update the password
-            _user->setPassword(pass);
-            // Update the first name
-            _user->setFirstName(fName);
-            // Update the last name
-            _user->setLastName(lName);
-           // If got here - all values successfully updated
+            if (pass.size() != 0)
+            {
+            
+                // Update the password
+                _user->setPassword(pass);
+            }
+            
+            if (fName.size() != 0)
+            {
+                // Update the first name
+                _user->setFirstName(fName);
+                // Update the logout label
+                workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
+            }
+
+            if (lName.size() != 0)
+            {
+                // Update the last name
+                _user->setLastName(lName);
+                workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
+            }
+           // If got here - values successfully updated
            lblMsgUser->setText("Success!");
            lblMsgUser->setStyleClass("message");
         } catch (UserException& e)
@@ -294,7 +338,7 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
     }
 }
 
-// TODO: patrick
+// Adds in a recurring transaction to the database
 void US_SettingsGUI::btnAddTransaction_Click() {
     string name = txtName->text().toUTF8();
     string type = txtType->text().toUTF8();
@@ -303,7 +347,9 @@ void US_SettingsGUI::btnAddTransaction_Click() {
     double value;
     try {
         string strValue = txtValue->text().toUTF8();
-        value = boost::lexical_cast<double>(value);
+        std::cout << strValue << std::endl;
+        value = boost::lexical_cast<double>(strValue);
+        std::cout << value << " DOUBLE VALUE" << std::endl;
     } catch(std::exception &e) {
         lblMsgTransaction->setText("Value must be a number!");
         lblMsgTransaction->setStyleClass("error");
@@ -313,6 +359,20 @@ void US_SettingsGUI::btnAddTransaction_Click() {
     string date = deDate->text().toUTF8();
     string frequency = ddFrequency->currentText().toUTF8();
     int numRepeats = spinNumRepeats->value();
+    lblMsgTransaction->setStyleClass("error");
+    if(name == "") {
+        lblMsgTransaction->setText("Name of Transaction must not be blank!");
+        return;
+    }
+    else if(type == "") {
+        lblMsgTransaction->setText("Type must not be blank!");
+        return;
+    }
+    else {
+        _user->getMain().repeatTransaction(_user->getName(), name, type, value, date, "main", frequency, numRepeats);
 
+        this->tblRecurringCosts->clear();
+        populateTable(); // update the table
+    }
 }
 

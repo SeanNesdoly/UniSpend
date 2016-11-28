@@ -255,12 +255,12 @@ void US_Project::addTransaction(US_Transaction newTransaction){
 
     //if user attempts to input an ID that already exists the SQLException
     //error will be caught and the user will be asked to try again
-   // try{
+    try{
     stmt->execute(sqlCommand);
 
-     //  }catch(sql::SQLException e){
-       //cout << endl << "The ID is already in use please input a different id" << endl;
-   // }
+       }catch(sql::SQLException e){
+       cout << endl << "The ID is already in use please input a different id" << endl;
+    }
     // if project is main updat currentBalance and monthlyAllowance as a result of the new transaction 
     // if it's a scenario (not main) then just add the transaction to the scenario transaction vector.
     if(projectName == "main"){
@@ -326,6 +326,28 @@ void US_Project::deleteTransaction(US_Transaction trans){
     }catch(sql::SQLException e){
         cout << e.what() <<endl;
     }
+}
+
+void US_Project::deleteRepeatTransaction(string name, string type, double value){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+
+    std::ostringstream stringVal; //new monthly Allowance
+    stringVal << value;
+    string sqlCommand = "DELETE from `transactions WHERE `username` = '" +username+ "' AND `name` = '" +name+"' AND `type` = '"+type+"' AND `value` = '"+stringVal.str()+"' AND `isRecurring` = '1'";
+    try{
+        stmt->execute(sqlCommand);
+    }catch(sql::SQLException e){
+        cout << e.what() <<endl;
+    }
+
+
 }
 
 

@@ -78,6 +78,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     model = new WStandardItemModel(this);
     //headers
     model->insertColumns(model->columnCount(), 2);
+
     model->setHeaderData(0, WString("Expense_Type"));
     model->setHeaderData(1, WString("Amount"));
     int rowData=0;
@@ -100,7 +101,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
             rowData++;
         }
     }
-    /*
+
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);
@@ -111,7 +112,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
         barch->addSeries(series);
     }
     barch->resize(300, 200);
-    */
+
     //Add Pie chart
     piech = new Wt::Chart::WPieChart(this);
     piech->setModel(model);
@@ -124,7 +125,6 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     piech->resize(600, 300);
     Rvbox->addWidget(piech);
 
-    /*//Add scatter plot
     scatch = new Wt::Chart::WCartesianChart(this);
     scatch->setBackground(Wt::WColor(220, 220, 220));
     scatch->setModel(model);
@@ -136,7 +136,8 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
         scatch->addSeries(s);
     }
     scatch->resize(500, 300);
-    Rvbox->addWidget(scatch,1);*/
+
+    Rvbox->addWidget(scatch,1);
 }
 
 void US_OverviewGUI::btnSave_Click() {
@@ -147,4 +148,3 @@ void US_OverviewGUI::btnSave_Click() {
     string sdate = StartDate->text().toUTF8();
     string edate = EndDate->text().toUTF8();
 }
-
