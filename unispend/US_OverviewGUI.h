@@ -19,6 +19,14 @@
 #include <algorithm>
 #include "US_User.h"
 #include "US_Workspace.h"
+#include <Wt/WAbstractItemView>
+#include <Wt/WApplication>
+#include <Wt/WContainerWidget>
+#include <Wt/WEnvironment>
+#include <Wt/WItemDelegate>
+#include <Wt/WStandardItemModel>
+#include <Wt/WStandardItem>
+#include <Wt/WTableView>
 
 using namespace Wt;
 using namespace std;
