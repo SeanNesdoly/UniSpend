@@ -12,7 +12,7 @@ string& UserException::what()
 }
 
 // Sign up constructor
-User::User(const string& username, const string& pass, const string& firstName, const string& lastName): name(username), password(pass), fName(firstName), lName(lastName)
+User::User(const string& username, const string& pass, const string& firstName, const string& lastName, double startBalance): name(username), password(pass), fName(firstName), lName(lastName)
 {
     //try to create user in SQL
     cout << "Tryng to create user with username: " << name << " first name: " << fName << " last Name:  " << lName << " pass: " << password << endl;
@@ -47,7 +47,7 @@ User::User(const string& username, const string& pass, const string& firstName, 
         cout << "Successfully created user with name " << name << endl;
         // Now that we have created user we need to initialize the US_Projects object and create the main project
         // By default we are saying user does not have a set budget since they specify this through settings to pass 0 to budget for month
-        US_Project main(name, 0.0);
+        US_Project main(name, startBalance);
         this->mainProject = main;
         US_Project newScenario(name, "testScenario", 24.0, "2016-11-30");
         this->scenarioProjects.push_back(newScenario);

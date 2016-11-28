@@ -26,7 +26,7 @@ class User
 {
 public: 
     // Sign up constructor
-    User(const string& username, const string& pass, const string& firstName, const string& lastName);
+    User(const string& username, const string& pass, const string& firstName, const string& lastName, double startBalance);
     // Login constructor
     User(const string& username, const string& pass);
 

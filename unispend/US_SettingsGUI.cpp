@@ -276,13 +276,25 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
     if (!failure) {
         try
         {
-            // Update the password
-            _user->setPassword(pass);
-            // Update the first name
-            _user->setFirstName(fName);
-            // Update the last name
-            _user->setLastName(lName);
-           // If got here - all values successfully updated
+            if (pass.size() != 0)
+            {
+            
+                // Update the password
+                _user->setPassword(pass);
+            }
+            
+            if (fName.size() != 0)
+            {
+                // Update the first name
+                _user->setFirstName(fName);
+            }
+
+            if (lName.size() != 0)
+            {
+                // Update the last name
+                _user->setLastName(lName);
+            }
+           // If got here - values successfully updated
            lblMsgUser->setText("Success!");
            lblMsgUser->setStyleClass("message");
         } catch (UserException& e)

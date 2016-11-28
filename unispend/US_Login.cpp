@@ -152,7 +152,7 @@ void US_Login::btnRegisterUser_Clicked() {
     }
 
     try {
-        _user = new User(username, pass, fName, lName);
+        _user = new User(username, pass, fName, lName, startingBalance);
 
         // reaching this statement denotes an authenticated user; create & show the workspace container!
         root = WApplication::instance()->root();

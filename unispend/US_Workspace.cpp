@@ -9,8 +9,8 @@
  */
 
 #include "US_Workspace.h"
-#include "US_OverviewGUI.h"
 #include "US_ForecastGUI.h"
+#include "US_OverviewGUI.h"
 #include "US_SettingsGUI.h"
 #include "US_TransactionsGUI.h"
 

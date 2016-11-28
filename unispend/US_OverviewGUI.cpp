@@ -97,6 +97,7 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
 
 
 
+/*
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);
@@ -108,7 +109,7 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
     }
     piech->setStyleClass("overview-pie");
     barch->resize(300, 200);
-
+*/
     //Add Pie chart
     piech->setModel(model);
     piech->setLabelsColumn(0);    // set the column that holds the labels
@@ -120,7 +121,7 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
     piech->resize(600, 300);
     Rvbox->addWidget(piech);
 
-    //Add scatter plot
+/*    //Add scatter plot
     scatch = new Wt::Chart::WCartesianChart(this);
     scatch->setBackground(Wt::WColor(220, 220, 220));
     scatch->setModel(model);
@@ -132,7 +133,8 @@ US_OverviewGUI::US_OverviewGUI(WContainerWidget *parent):
         scatch->addSeries(s);
     }
     scatch->resize(500, 300);
-    Rvbox->addWidget(scatch,1);
+    Rvbox->addWidget(scatch,1); 
+*/
 }
 
 void US_OverviewGUI::btnSave_Click() {
