@@ -19,7 +19,6 @@ User::User(const string& username, const string& pass, const string& firstName, 
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
     sql::Statement *stmt;
-
     driver = sql::mysql::get_mysql_driver_instance();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
 
@@ -29,7 +28,7 @@ User::User(const string& username, const string& pass, const string& firstName, 
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
     //string sqlCommand = "INSERT INTO `users` (`name`, `password`) VALUES ('" + name + "', '" + pass + "')";
-    string sqlCommand = "INSERT INTO `users`(`username`, `password`, `FirstName`, `LastName`) VALUES ('" + name + "', '" + password + "', '" + fName + "', '" + lName + "')";
+    string sqlCommand = "INSERT INTO `users`(`username`, `password`, `FirstName`, `LastName`, `signUpDate`) VALUES ('" + name + "', '" + password + "', '" + fName + "', '" + lName + "', NOW())";
 
     try
     {
@@ -51,6 +50,9 @@ User::User(const string& username, const string& pass, const string& firstName, 
         this->mainProject = main;
         US_Project newScenario(name, "testScenario", 24.0, "2016-11-30");
         this->scenarioProjects.push_back(newScenario);
+        res = stmt->executeQuery("SELECT NOW()");
+        res->next();
+        this->signUpDate = res->getString(1);
 
     }
 
@@ -279,6 +281,10 @@ US_Project User::getMain()
 vector<US_Project> User::getScenarios()
 {
     return scenarioProjects;
+}
+
+string User::getSignUpDate(){
+    return signUpDate;
 }
 
 

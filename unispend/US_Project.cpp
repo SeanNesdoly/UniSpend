@@ -192,6 +192,37 @@ bool US_Project::isScenario() {
 }
 */
 
+double US_Project::getRemainder(){
+sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    sql::ResultSet *res2;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res2 = stmt->executeQuery("SELECT * FROM `users` WHERE `username` ='"+username+"'");
+    res2->next();
+    res = stmt->executeQuery("SELECT DATEDIFF('"+targetDate +"','" +res2->getString("signUpDate")+ "')");
+    cout << res2->getString("signUpDate") << endl;
+    res->next();
+    cout << "Days in year since start " << res->getInt(1) << endl;
+    double expectedDailyAverage = yearBalance/res->getDouble(1);
+    cout << "this is expected Daily average " << expectedDailyAverage << endl;
+    res = stmt->executeQuery("SELECT DATEDIFF( NOW(),'" +res2->getString("signUpDate")+ "')");
+    res->next();
+    cout << "This is how many days since started " << res->getInt(1) << endl;
+    double currDailyAverage = (yearBalance - currentBalance)/res->getDouble(1);
+    cout << " currDailyAverage " << endl;
+    double expectedSpent = expectedDailyAverage*res->getDouble(1);
+    cout <<"expected spent " << expectedSpent << endl;
+    double actualSpent = currDailyAverage * res->getDouble(1);
+    cout <<"actual spent " << actualSpent << endl;
+    double difference = expectedSpent - actualSpent;
+
+    return difference;
+}
 
 // Given a set a set of transactions this method will return the average amount spent per day from the projects start date till present.
 double US_Project::getAverage(vector<US_Transaction> transactionsList){
@@ -199,11 +230,14 @@ double US_Project::getAverage(vector<US_Transaction> transactionsList){
     sql::Connection *con;
     sql::Statement *stmt;
     sql::ResultSet *res;
+    sql::ResultSet *res2;
     driver = sql::mysql::get_mysql_driver_instance();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +startDate+ "')");
+    res2 = stmt->executeQuery("SELECT * FROM `users` WHERE `username` ='"+username+"'");
+    res2->next();
+    res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +res2->getString("signUpDate")+ "')");
     res->next();
     double sum = this->sumAllTransactions(transactionsList);
     int numOfDays = res->getInt(1)+1;
@@ -365,6 +399,7 @@ vector<US_Transaction> US_Project::getAllTransactions(){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -389,6 +424,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -411,6 +447,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date1, string date2
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -521,6 +558,10 @@ vector<US_Transaction> US_Project::getTransactions(){
     return transactions;
 }
 
+string US_Project::getTargetDate(){
+    return targetDate;
+}
+
 
 /*
  * Setters
@@ -538,3 +579,47 @@ void US_Project::setTransactions(vector<US_Transaction> transactions){
     this->transactions = transactions;
 }
 
+void US_Project::setScenarioCost(double scenarioCost){
+    sql :: mysql :: MySQL_Driver *driver;
+    sql :: Connection *con;
+    sql :: Statement *stmt;
+
+    std::ostringstream scenarioCostStr;
+    scenarioCostStr << scenarioCost; 
+
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    string sqlCommand ="UPDATE projects SET scenarioCost = '" + scenarioCostStr.str() + "' WHERE projectName = '"+projectName+"' AND username ='"+username+"'";
+    stmt->execute(sqlCommand);
+
+    this->scenarioCost = scenarioCost;
+}
+
+void US_Project::setTargetDate(string tDate){
+    sql :: mysql :: MySQL_Driver *driver;
+    sql :: Connection *con;
+    sql :: Statement *stmt;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    this->targetDate = tDate;
+    string sqlCommand ="UPDATE projects SET targetDate = '" + targetDate + "' WHERE projectName = '"+projectName+"' AND username ='"+username+"'";
+    stmt->execute(sqlCommand);
+
+
+}
+
+void US_Project::setSignUpDate(){
+    sql :: mysql :: MySQL_Driver *driver;
+    sql :: Connection *con;
+    sql :: Statement *stmt;
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    string sqlCommand ="UPDATE users SET signUpDate = '2016-11-25' WHERE username = '"+username+"'";
+    stmt->execute(sqlCommand);
+}

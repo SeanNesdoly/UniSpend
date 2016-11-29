@@ -34,6 +34,10 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     // current scenario selection
     lblScenario = new WLabel("Current Scenario:");
     listScenarios = new WComboBox();
+    listScenarios->addItem("");
+    for(int i=0; i < _user->getScenarios().size(); i++){
+    	listScenarios->addItem(_user->getScenarios().at(i).getProjectName());
+    }
     // TODO: get scenarios!
 
     listScenarios->changed().connect(this, &US_ForecastGUI::listScenarios_Changed);
@@ -112,7 +116,7 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     // ==========================
     boxScenarioContent = new WGroupBox("Scenario Transactions");
     hbox->addWidget(boxScenarioContent, 1); // add section to tab container
-
+    
     lblScenarioRange = new WLabel("<b>Scenario Transactions in the Range: </b>"); // TODO: add in scenario date range
     boxScenarioContent->addWidget(lblScenarioRange);
 
@@ -127,25 +131,6 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     tblScenarioData->addStyleClass("table-striped");
 
     // header row
-    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)"};
-    int numTransactions = 20; // TODO: replace
-    int numCols = headerRowVals.size(); // name | type | value | date
-    for (int row = 0; row < numTransactions; row++) {
-        for (int col = 0; col < numCols; col++) {
-            WText *cell = new WText();
-
-            if (row == 0) {
-                cell->setText(headerRowVals.at(col));
-            } else {
-                cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
-            }
-
-            tblScenarioData->elementAt(row, col)->addWidget(cell);
-        }
-    }
-
-    boxScenarioContent->addWidget(tblScenarioData);
-
     /*tblScenarioData = new WTableView();
     tblScenarioData->setAlternatingRowColors(true);
     tblScenarioData->setSelectionMode(Wt::NoSelection);
@@ -167,15 +152,14 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     barMoneySpent = new WProgressBar();
     barMoneySpent->setFormat("Leftover $ towards target balance %.0f %%");
     barMoneySpent->resize(Wt::WLength("100%"),100);
-    barMoneySpent->setRange(0,100); // TODO: from database
-    barMoneySpent->setValue(69); // TODO: from database
     boxScenarioAnalysis->addWidget(barMoneySpent);
 
     // leftover amount after scenario
     lblLeftover = new WLabel("$ left over to date:");
     txtLeftover = new WLineEdit();
+    double leftover = _user->getMain().getRemainder();
+    txtLeftover->setText("$" + boost::lexical_cast<string>(leftover));
     txtLeftover->setEnabled(false);
-    txtLeftover->setText("$ LEFTOVER"); // TODO: from database
     lblLeftover->setBuddy(txtLeftover);
     boxScenarioAnalysis->addWidget(lblLeftover);
     boxScenarioAnalysis->addWidget(txtLeftover);
@@ -184,13 +168,18 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     lblSpendingWithScenario = new WLabel("Average ($/day) during school year:");
     txtSpendingWithScenario = new WLineEdit();
     txtSpendingWithScenario->setEnabled(false);
-    txtSpendingWithScenario->setText("$ AVG_SPENDING_WITH_SCENARIO");
+    vector<US_Transaction> mainTransactions = _user->getMain().getTransactions();
+    double mainDailySpending = _user->getMain().getAverage(mainTransactions);
+    std::ostringstream mainDailySpendingStr;
+    mainDailySpendingStr << mainDailySpending;
+
+    txtSpendingWithScenario->setText("$"+mainDailySpendingStr.str()+"/day");
     lblSpendingWithScenario->setBuddy(txtSpendingWithScenario);
     boxScenarioAnalysis->addWidget(lblSpendingWithScenario);
     boxScenarioAnalysis->addWidget(txtSpendingWithScenario);
 
     // average spending WITHOUT scenario costs applied
-    lblSpendingWithoutScenario = new WLabel("Average ($/day) since addition of Scenario:"); // TODO: scenario name
+    lblSpendingWithoutScenario = new WLabel("Average ($/day) since planning for Scenario:"); // TODO: scenario name
     txtSpendingWithoutScenario = new WLineEdit();
     txtSpendingWithoutScenario->setEnabled(false);
     txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
@@ -201,7 +190,64 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
 
 // event handler for the current scenario combo box
 void US_ForecastGUI::listScenarios_Changed() {
+    vector<US_Transaction> scenarioTransactions;
     string selectedScenario = listScenarios->currentText().toUTF8();
+    for(int i=0; i < _user->getScenarios().size(); i++){
+    	if(_user->getScenarios().at(i).getProjectName() == selectedScenario){
+             scenarioTransactions = _user->getScenarios().at(i).getTransactions();
+             double scenarioDailySpending = _user->getScenarios().at(i).getAverage(scenarioTransactions);
+             std::ostringstream scenarioDailySpendingStr;
+             scenarioDailySpendingStr << scenarioDailySpending;
+             txtSpendingWithoutScenario->setText("$"+scenarioDailySpendingStr.str()+"/day");
+
+             double scenarioCost = _user->getScenarios().at(i).getScenarioCost();
+             double moneyLeftover = _user->getMain().getRemainder();
+             barMoneySpent->setRange(0,scenarioCost);
+             barMoneySpent->setValue(moneyLeftover);
+             lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+ _user->getScenarios().at(i).getTargetDate());
+
+             boxScenarioContent->setTitle(_user->getScenarios().at(i).getProjectName() + " Transactions");
+             lblSpendingWithoutScenario->setText("Average ($/day) since planning for " + _user->getScenarios().at(i).getProjectName());
+        }
+    }
+    tblScenarioData->clear();
+    vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Date (yyyy-mm-dd)"};
+
+    int numTransactions = scenarioTransactions.size();
+    int numCols = headerRowVals.size(); // name | type | value | date
+    for (int row = 0; row <= numTransactions; row++) {
+        for (int col = 0; col < numCols; col++) {
+            WText *cell = new WText();
+
+            if (row == 0) {
+                cell->setText(headerRowVals.at(col));
+            } else {
+                switch(col){
+                  case 0:{
+                    cell->setText(scenarioTransactions.at(row-1).getName());
+                    break;
+                  }
+                  case 1:{
+                    cell->setText(scenarioTransactions.at(row-1).getType());
+                    break;
+                  }
+                  case 2:{
+                    string val = boost::lexical_cast<string>(scenarioTransactions.at(row-1).getValue());
+                    cell->setText(val);
+                    break;
+                  }
+                  case 3:{
+                    cell->setText(scenarioTransactions.at(row-1).getDate());
+                  }
+                }
+                //tblScenarioData->elementAt(row, col)->addWidget(cell);
+            }
+            tblScenarioData->elementAt(row, col)->addWidget(cell);
+        }
+    }
+
+    boxScenarioContent->addWidget(tblScenarioData);
+
     // TODO: fetch selected scenario from the database & update target balance & date
 }
 
@@ -209,16 +255,45 @@ void US_ForecastGUI::listScenarios_Changed() {
 void US_ForecastGUI::btnUpdateBalanceAndDate_Click() {
     // parse balance from widget
     double balance;
+    string strBalance = txtTargetBalance->text().toUTF8();
     try {
-        string strBalance = txtTargetBalance->text().toUTF8();
         balance = boost::lexical_cast<double>(strBalance);
+        string selectedScenario = listScenarios->currentText().toUTF8();
     } catch(std::exception &e) {
         lblMsg1->setText("Target Balance must be a number!");
         lblMsg1->setStyleClass("error");
-        return;
     }
 
+    string selectedScenario = listScenarios->currentText().toUTF8();
     WDate targetDate = deTargetDate->date();
+    string strTargetDate = targetDate.toString("yyyy-MM-dd").toUTF8();
+    WDate currentDate = WDate::currentServerDate();
+    string strCurrentDate = currentDate.toString("yyyy-MM-dd").toUTF8();
+
+    for(int i=0; i < _user->getScenarios().size(); i++){
+            if(_user->getScenarios().at(i).getProjectName() == selectedScenario){
+                if(strBalance != "" && strTargetDate != strCurrentDate ){
+                    _user->getScenarios().at(i).setScenarioCost(balance);
+                    _user->getScenarios().at(i).setTargetDate(strTargetDate);
+                    lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+strTargetDate);
+                }else if(strBalance != "" && strTargetDate == strCurrentDate){
+                    _user->getScenarios().at(i).setScenarioCost(balance);
+                }else if(strBalance == "" && strTargetDate != strCurrentDate){
+                    _user->getScenarios().at(i).setTargetDate(strTargetDate);
+                    lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+strTargetDate);
+                    cout << "This should be the new date "<< _user->getScenarios().at(i).getTargetDate() << endl;
+                }else{
+                    lblMsg1->setText("new cost and target date need to be changed before updating");
+                }
+
+                double scenarioCost = _user->getScenarios().at(i).getScenarioCost();
+                double moneyLeftover = _user->getMain().getLeftover();
+                barMoneySpent->setRange(0,scenarioCost);
+                barMoneySpent->setValue(moneyLeftover);
+            }
+    }
+
+
 
     // TODO: set values in database
     lblMsg1->setText("Success!");
@@ -228,7 +303,7 @@ void US_ForecastGUI::btnUpdateBalanceAndDate_Click() {
 // create a new scenario
 void US_ForecastGUI::btnCreateNewScenario_Click() {
     string scenarioName = txtNewScenario->text().toUTF8();
-
+    string strScenarioCost = txtNewScenarioCost->text().toUTF8();
     // parse scenario cost from widget
     double scenarioCost;
     try {
@@ -239,8 +314,12 @@ void US_ForecastGUI::btnCreateNewScenario_Click() {
         lblMsg2->setStyleClass("error");
         return;
     }
-
     WDate targetDate = deNewTargetDate->date();
+    string strTargetDate = targetDate.toString("yyyy-MM-dd").toUTF8();
+
+
+    US_Project newScenario(_user->getName(), scenarioName, scenarioCost, strTargetDate);
+    listScenarios->addItem(scenarioName);
 
     // TODO: insert into database via Project constructor call
     lblMsg2->setText("Success!");
