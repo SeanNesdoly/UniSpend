@@ -24,6 +24,7 @@
 #include <Wt/WProgressBar>
 #include <Wt/WTable>
 #include <string>
+#include <iostream>
 
 #include "US_Workspace.h"
 #include "US_User.h"
