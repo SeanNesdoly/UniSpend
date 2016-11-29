@@ -37,6 +37,7 @@ public:
     string& getPassword();
     string& getFirstName();
     string& getLastName();
+    string getSignUpDate();
     void setPassword(const string& pass);
     void setFirstName(const string& firstName);
     void setLastName(const string& lastName);
@@ -49,6 +50,7 @@ private:
     string password;
     string fName;
     string lName;
+    string signUpDate;
     US_Project mainProject;
     vector<US_Project> scenarioProjects;
     //TODO: ADD US_Project objects ie. mainProject and scenario

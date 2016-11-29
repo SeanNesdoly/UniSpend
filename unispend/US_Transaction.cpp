@@ -63,8 +63,7 @@ double US_Transaction::getValue(){
 }
 
 string US_Transaction::getDate(){
-    string date2 = date.substr(1, date.size()-2);
-	return date;
+    return date;
 }
 
 string US_Transaction::getIsRecurring(){

@@ -286,17 +286,16 @@ void US_TransactionsGUI::listDateRange_Change() {
                    WTableRow* theRow = table->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
                    theRow->hide();
 
-                   // retrieve column values (testing - will remove)
-                   //string date = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
-                   //string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
-                   //string name = dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8();
-                   //double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(3)->widget(0))->text().toUTF8());
-
                    // TODO: delete transaction in database
                    vector<US_Transaction> transactionsInCurrRange = _user->getMain().getAllTransactions(table->attributeValue("trans_from_date").toUTF8());
                    US_Transaction transToDelete = transactionsInCurrRange.at(boost::lexical_cast<int>(imgDelete->attributeValue("row")) - 1);
                    cout << transToDelete.getId() << " " << transToDelete.getName() << endl;
-                   _user->getMain().deleteTransaction(transToDelete);
+                   _user->deleteTransaction(transToDelete);
+
+                   // TODO: update current balance label
+                   ostringstream curBalanceFormat;
+                   curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
+                   workspace->currentBalance->setText(curBalanceFormat.str());
                }));
            }
        }
@@ -361,17 +360,16 @@ void US_TransactionsGUI::reloadMonthly(){
                    WTableRow* theRow = table->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
                    theRow->hide();
 
-                   // retrieve column values (testing - will remove)
-                   //string date = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
-                   //string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
-                   //string name = dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8();
-                   //double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(3)->widget(0))->text().toUTF8());
-
                    // TODO: delete transaction in database
                    vector<US_Transaction> transactionsInCurrRange = _user->getMain().getAllTransactions(table->attributeValue("trans_from_date").toUTF8());
                    US_Transaction transToDelete = transactionsInCurrRange.at(boost::lexical_cast<int>(imgDelete->attributeValue("row")) - 1);
                    cout << transToDelete.getId() << " " << transToDelete.getName() << endl;
-                   _user->getMain().deleteTransaction(transToDelete);
+                   _user->deleteTransaction(transToDelete);
+
+                   // TODO: update current balance label
+                   ostringstream curBalanceFormat;
+                   curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
+                   workspace->currentBalance->setText(curBalanceFormat.str());
                }));
            }
        }
