@@ -40,7 +40,7 @@ private:
     Wt::Chart::WPieChart* piech;
     Wt::Chart::WCartesianChart* barch;
     Wt::Chart::WCartesianChart* scatch;
-    Wt::WContainerWidget* Rcont;
+    Wt::Chart::WDataSeries* series;
     WStandardItemModel* model;
     WLabel* lblStartDate;
     WLabel* lblEndDate;

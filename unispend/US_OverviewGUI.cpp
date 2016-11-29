@@ -16,10 +16,8 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     Lvbox = new Wt::WVBoxLayout();
     overhbox->addLayout(Lvbox,0);
 
-    Rcont= new WContainerWidget;
-    overhbox->addWidget(Rcont);
     Rvbox = new Wt::WVBoxLayout();
-    Rcont->setLayout(Rvbox,0);
+    overhbox->addLayout(Rvbox,0);
 
     datehbox = new Wt::WHBoxLayout();
     Lvbox->addLayout(datehbox,0);
@@ -78,42 +76,56 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     model = new WStandardItemModel(this);
     //headers
     model->insertColumns(model->columnCount(), 2);
-
     model->setHeaderData(0, WString("Expense_Type"));
     model->setHeaderData(1, WString("Amount"));
     int rowData=0;
-
+    cout<<"I did it yeah:\n";
+    cout<<s;
     for(int i=0; i<s; i++){
         string type=Transactions.at(i).getType();
         double val=Transactions.at(i).getValue();
+        cout<<type;
         if (std::find(typeexpenses.begin(), typeexpenses.end(), type) != typeexpenses.end())
         {
+            cout<<"\nrepeat\n";
             int pos = std::find(typeexpenses.begin(), typeexpenses.end(), type) - typeexpenses.begin();
+            cout<<"position:";
+            cout<<pos;
             double sum=valueexp.at(pos);
             sum +=val;
-            model->setData(pos, 1, sum);
+            valueexp.at(pos)=sum;
+            cout<<"\n sum:";
+            cout<<sum;
         }
         else{
+            rowData++;
             typeexpenses.push_back(type);
             valueexp.push_back(val);
-            model->setData(rowData, 0, WString(type));
-            model->setData(rowData, 1, val);
-            rowData++;
         }
     }
-/*
+
+    model->insertRows(model->rowCount(), rowData);
+
+    for(int j=0; j<rowData; j++){
+        model->setData(j, 0,WString(typeexpenses.at(j)));
+        model->setData(j, 1, valueexp.at(j));
+    }
+
     //Add Bar chart
     barch = new Wt::Chart::WCartesianChart(this);
     barch->setModel(model);
     barch->setXSeriesColumn(0);
     Lvbox->addWidget(barch,1);
-    for (int column = 1; column < model->columnCount(); ++column) {
-        Wt::Chart::WDataSeries *series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries,Wt::Chart::Axis::Y1Axis);
-        barch->addSeries(series);
-    }
+    series = new Wt::Chart::WDataSeries(1, Wt::Chart::BarSeries,Wt::Chart::Axis::Y1Axis);
+    //for (int column = 1; column < model->columnCount(); ++column) {
+        //series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries,Wt::Chart::Axis::Y1Axis);
+        //Wt::Chart::WDataSeries *series = new Wt::Chart::WDataSeries(column, Wt::Chart::BarSeries,Wt::Chart::Axis::Y1Axis);
+    //}
+    barch->addSeries(*series);
     barch->resize(300, 200);
-*/
+
     //Add Pie chart
+
     piech = new Wt::Chart::WPieChart(this);
     piech->setModel(model);
     piech->setLabelsColumn(0);    // set the column that holds the labels
@@ -124,6 +136,7 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     piech->setShadowEnabled(true);
     piech->resize(600, 300);
     Rvbox->addWidget(piech);
+
     /*
     scatch = new Wt::Chart::WCartesianChart(this);
     scatch->setBackground(Wt::WColor(220, 220, 220));
