@@ -140,6 +140,13 @@ US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(
 	btnAddTransaction->clicked().connect(this, &US_TransactionsGUI::btnAddTransaction_Click);
  	boxAddTransaction->addWidget(btnAddTransaction);
 	
+
+	//Test Label for exceptions
+	boxTest = new WGroupBox();
+	divLeft->addWidget(boxTest);
+	lblTest = new WLabel("Test");
+	boxTest->addWidget(lblTest);
+
 	////////////////////	
 	//Right Contaniner//
 	////////////////////

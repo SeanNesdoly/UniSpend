@@ -87,4 +87,10 @@ private:
 	//Date Range Selection
 	WLabel* lblDateRange;
 	WComboBox* listDateRange;
+
+
+
+	WLabel* lblTest;
+	WGroupBox* boxTest;
+
 };
