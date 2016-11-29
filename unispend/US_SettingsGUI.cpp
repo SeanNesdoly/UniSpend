@@ -176,6 +176,7 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
     // number of repeats
     lblNumRepeats = new WLabel("Number of Repeats:");
     spinNumRepeats = new WSpinBox();
+    spinNumRepeats->setValue(1);
     spinNumRepeats->setMinimum(1);
     spinNumRepeats->setSingleStep(1);
     lblNumRepeats->setBuddy(spinNumRepeats);
@@ -229,7 +230,8 @@ void US_SettingsGUI::populateTable() {
                                 cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
                                 break;
                             case 3 :
-                                cell->setText(currTransaction->getDate());
+                                std::string currDateFormatted = currTransaction->getDate().substr(1, currTransaction->getDate().size() - 2);
+                                cell->setText(currDateFormatted);
                                 break;
                             case 4:
                                 // TODO: add in frequency column
@@ -255,10 +257,15 @@ void US_SettingsGUI::populateTable() {
                             // retrieve column values
                             string name = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
                             string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
-                            double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text());
+                            double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8());
 
                             // TODO: delete recurring transaction in database
                             _user->getMain().deleteRepeatTransaction(name, type, value);
+
+                            // update the current balance label (in the case that a transaction was deleted on "today's" date)
+                            ostringstream curBalanceFormat;
+                            curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
+                            workspace->currentBalance->setText(curBalanceFormat.str());
                         }));
 
                         tblRecurringCosts->elementAt(row, col)->addWidget(imgDelete);
@@ -380,8 +387,18 @@ void US_SettingsGUI::btnAddTransaction_Click() {
     else {
         _user->getMain().repeatTransaction(_user->getName(), name, type, value, date, "main", frequency, numRepeats);
 
+        // clear & populate the table with the new row
         this->tblRecurringCosts->clear();
-        populateTable(); // update the table
+        populateTable();
+
+        // update the current balance label (in the case that a transaction was added on "today's" date)
+        ostringstream curBalanceFormat;
+        curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
+        workspace->currentBalance->setText(curBalanceFormat.str());
+
+        // user feedback
+        lblMsgTransaction->setStyleClass("message");
+        lblMsgTransaction->setText("Successfully added the following recurring transaction: " + name);
     }
 }
 
