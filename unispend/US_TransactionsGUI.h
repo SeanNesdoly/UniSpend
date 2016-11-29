@@ -19,15 +19,13 @@
 #include <Wt/WLineEdit>
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
-
 #include <Wt/WTable>
 #include <Wt/WTableCell>
 #include <Wt/WLineEdit>
 #include <Wt/WText>
-
-
 #include <Wt/WHBoxLayout>
 #include <Wt/WGroupBox>
+#include <Wt/WImage>
 
 #include "US_Workspace.h"
 #include "US_User.h"
@@ -44,14 +42,14 @@ public:
 	
 	void btnAddTransaction_Click();
 	void listDateRange_Change();
-	void LoadTable();
+	void reloadMonthly(); 
 
 	void handleInternalPath(const string &internalPath);
 
 private:
 
 	User* _user;
-
+        US_Workspace* workspace;
 	void btnAdd_Clicked();
 	void btnEdit_Clicked();
 		
@@ -74,7 +72,7 @@ private:
 	
 	//Add Transaction widgets
 	WLabel* lblAddDate;
-	WLineEdit* txtAddDate;
+	WDateEdit* deAddDate;
 	WLabel* lblAddType;
 	WLineEdit* txtAddType;
 	WLabel* lblAddDescription;
@@ -87,4 +85,10 @@ private:
 	//Date Range Selection
 	WLabel* lblDateRange;
 	WComboBox* listDateRange;
+
+
+
+	WLabel* lblTest;
+	WGroupBox* boxTest;
+
 };

@@ -89,7 +89,9 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
 
     // current balance for the user
     if (user != nullptr) {
-        currentBalance = new WMenuItem("Balance on " + WDate::currentDate().toString().toUTF8() + ": " + boost::lexical_cast<std::string>(user->getMain().getCurrentBalance()));
+        ostringstream curBalanceFormat;
+        curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << user->getMain().getCurrentBalance();
+        currentBalance = new WMenuItem(curBalanceFormat.str());
         currentBalance->setCanReceiveFocus(false);
         currentBalance->setSelectable(false);
         currentBalance->setPadding(WLength(30), Wt::Side::Right);

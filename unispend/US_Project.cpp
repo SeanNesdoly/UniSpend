@@ -340,7 +340,7 @@ void US_Project::deleteRepeatTransaction(string name, string type, double value)
 
     std::ostringstream stringVal; //new monthly Allowance
     stringVal << value;
-    string sqlCommand = "DELETE from `transactions WHERE `username` = '" +username+ "' AND `name` = '" +name+"' AND `type` = '"+type+"' AND `value` = '"+stringVal.str()+"' AND `isRecurring` = '1'";
+    string sqlCommand = "DELETE from `transactions` WHERE `username` = '" +username+ "' AND `name` = '" +name+"' AND `type` = '"+type+"' AND `value` = '"+stringVal.str()+"' AND `isRecurring` = '1'";
     try{
         stmt->execute(sqlCommand);
     }catch(sql::SQLException e){
