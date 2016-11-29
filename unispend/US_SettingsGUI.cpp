@@ -253,9 +253,9 @@ void US_SettingsGUI::populateTable() {
                             theRow->hide();
 
                             // retrieve column values
-                            string name = dynamic_cast<WText>(theRow->elementAt(0)->widget(0)).text().toUTF8();
-                            string type = dynamic_cast<WText>(theRow->elementAt(1)->widget(0)).text().toUTF8();
-                            double value = boost::lexical_cast<double>(dynamic_cast<WText>(theRow->elementAt(2)->widget(0)).text());
+                            string name = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
+                            string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
+                            double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text());
 
                             // TODO: delete recurring transaction in database
                             _user->getMain().deleteRepeatTransaction(name, type, value);
