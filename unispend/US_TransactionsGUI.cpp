@@ -276,6 +276,27 @@ void US_TransactionsGUI::listDateRange_Change() {
                ostringstream convertToString;
                convertToString << transactionList.at(i).getValue();
                table->elementAt(row, 3)->addWidget(new WText(convertToString.str()));
+
+               // delete image button
+               WImage* imgDelete = new WImage("resources/delete.png");
+               imgDelete->setAttributeValue("row", boost::lexical_cast<std::string>(row));
+               table->setAttributeValue("trans_from_date", dateFormat.str());
+               table->elementAt(row, 4)->addWidget(imgDelete);
+               imgDelete->clicked().connect(std::bind([=] () {
+                   WTableRow* theRow = table->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
+                   theRow->hide();
+
+                   // retrieve column values (testing - will remove)
+                   //string date = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
+                   //string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
+                   //string name = dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8();
+                   //double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(3)->widget(0))->text().toUTF8());
+
+                   // TODO: delete transaction in database
+                   vector<US_Transaction> transactionsInCurrRange = _user->getMain().getAllTransactions(table->attributeValue("trans_from_date").toUTF8());
+                   US_Transaction transToDelete = transactionsInCurrRange.at(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
+                   _user->getMain().deleteTransaction(transToDelete);
+               }));
            }
        }
 
@@ -329,6 +350,27 @@ void US_TransactionsGUI::reloadMonthly(){
                ostringstream convertToString;
                convertToString << transactionList.at(i).getValue();
                table->elementAt(row, 3)->addWidget(new WText(convertToString.str()));
+
+               // delete image button
+               WImage* imgDelete = new WImage("resources/delete.png");
+               imgDelete->setAttributeValue("row", boost::lexical_cast<std::string>(row));
+               table->setAttributeValue("trans_from_date", dateFormat.str());
+               table->elementAt(row, 4)->addWidget(imgDelete);
+               imgDelete->clicked().connect(std::bind([=] () {
+                   WTableRow* theRow = table->rowAt(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
+                   theRow->hide();
+
+                   // retrieve column values (testing - will remove)
+                   //string date = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
+                   //string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
+                   //string name = dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8();
+                   //double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(3)->widget(0))->text().toUTF8());
+
+                   // TODO: delete transaction in database
+                   vector<US_Transaction> transactionsInCurrRange = _user->getMain().getAllTransactions(table->attributeValue("trans_from_date").toUTF8());
+                   US_Transaction transToDelete = transactionsInCurrRange.at(boost::lexical_cast<int>(imgDelete->attributeValue("row")));
+                   _user->getMain().deleteTransaction(transToDelete);
+               }));
            }
        }
 

@@ -19,15 +19,13 @@
 #include <Wt/WLineEdit>
 #include <Wt/WPushButton>
 #include <Wt/WPanel>
-
 #include <Wt/WTable>
 #include <Wt/WTableCell>
 #include <Wt/WLineEdit>
 #include <Wt/WText>
-
-
 #include <Wt/WHBoxLayout>
 #include <Wt/WGroupBox>
+#include <Wt/WImage>
 
 #include "US_Workspace.h"
 #include "US_User.h"
