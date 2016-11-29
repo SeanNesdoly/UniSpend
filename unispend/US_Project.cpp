@@ -496,7 +496,7 @@ void US_Project:: repeatTransaction(string user, string name, string type, doubl
         else if (frequency == "yearly")
             date2.append(" year");
         US_Transaction trans = US_Transaction(user, name, type, value, date2, "1", project);
-        addTransaction(trans;
+        addTransaction(trans);
     }
 }
 
