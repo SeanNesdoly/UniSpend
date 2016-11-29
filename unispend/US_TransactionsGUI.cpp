@@ -29,6 +29,8 @@
 #include <Wt/WDateEdit>
 #include <Wt/WHBoxLayout>
 
+#include "US_User.h"
+#include <time.h>
 
 
 using namespace Wt;
@@ -65,7 +67,8 @@ namespace {
 
 
 US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(parent) {
-	
+	// Set the global parent
+        workspace = parent;
 	//Retrive global user object from parent workspace container
 	_user = parent->user;
 	
@@ -108,6 +111,8 @@ US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(
 	//Contents for Add Transactions GroupBox
 	lblAddDate = new WLabel("Date:");
 	deAddDate = new WDateEdit();
+        deAddDate->setFormat("yyyy-MM-dd");
+        deAddDate->setDate(WDate::currentServerDate());
 	lblAddDate->setBuddy(deAddDate);
 	boxAddTransaction->addWidget(lblAddDate);
 	boxAddTransaction->addWidget(deAddDate);
@@ -152,21 +157,10 @@ US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(
 	table->elementAt(0,1)->addWidget(new WText("Type"));
 	table->elementAt(0,2)->addWidget(new WText("Transaction Description"));
 	table->elementAt(0,3)->addWidget(new WText("Cost"));
-	//table->elementAt(0,4)->addWidget(new WText("Balance"));
 	
-	//Input data, will need to change to retrieving data from database
-	for(unsigned i=0; i<4;i++){
-		Content content = contents[i];
-		int row = i+1;
-
-		table->elementAt(row,0)->addWidget(new WText(content.Date));
-		table->elementAt(row,1)->addWidget(new WText(content.Category));
-		table->elementAt(row,2)->addWidget(new WText(content.Transaction));
-		table->elementAt(row,3)->addWidget(new WText(WString::fromUTF8("{1}").arg(content.Cost)));
-
-	}
+        reloadMonthly();
 	
-	//Format table
+        //Format table
 	table->addStyleClass("table form-inline");
 	table->addStyleClass("table-bordered");
 	table->addStyleClass("table-hover");
@@ -175,26 +169,161 @@ US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(
 } 
 
 void US_TransactionsGUI::btnAddTransaction_Click() {
-	//Set values from text fields into DB
-	
-	//setDate(txtAddDate);
-	//setType(txtAddType);
-	//setName(txtAddDescription);
-	//setValue(txtAddValue);
+    //Set values from text fields into DB
+    string dateStr = deAddDate->text().toUTF8();
+    cout << dateStr << endl;
+    string typeStr = txtAddType->text().toUTF8();
+    cout << typeStr << endl;
+    string transactionStr = txtAddDescription->text().toUTF8();
+    cout << transactionStr << endl;
+    string valueStr = txtAddCost->text().toUTF8();
+    cout << valueStr << endl;
+
+    // Check for valid data
+    if (dateStr.compare("") == 0 || typeStr.compare("") == 0 || transactionStr.compare("") == 0 || valueStr.compare("") == 0)
+    {
+        cout << "MUST ENTER VALUES FOR ALL FIELDS" << endl;
+    }
+    else
+    {
+        double cost = atof(valueStr.c_str());
+        // Create the transaction and add to user
+        US_Transaction trans(_user->getName(), transactionStr, typeStr, cost, dateStr, "0", "main");
+        _user->addTransaction(trans);
+        // Update label balance
+        ostringstream curBalanceFormat;
+        curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
+        workspace->currentBalance->setText(curBalanceFormat.str());
+    
+        // Clear text boxes
+        txtAddType->setText("");
+        txtAddDescription->setText("");
+        txtAddCost->setText("");
+        deAddDate->setDate(WDate::currentServerDate());
+
+        // Reload monthly table to show the transaction in the transactions table
+        reloadMonthly();
+    }
 
 }
 
 void US_TransactionsGUI::listDateRange_Change() {
-	//Change date range variable 
-	//Reload table
-		//Create new cells if more data
-		//Delete old cells if less data
-	
-	lblAddTransaction->setText("Test");
+        // Get transactions for range and update table
+        cout << "BEFORE TRANSACTIONS" << endl;
+        std::ostringstream dateFormat;
+        time_t timeObj = time(NULL);
+        struct tm *curTime = localtime(&timeObj);
+
+        if (listDateRange->currentIndex() == 0)
+        {
+            // In the current month index so get the current month from UNIX
+            cout << "IN CURRENT MONTH SECTION" << endl;
+            dateFormat << "" << (curTime->tm_year + 1900) << "-" << (curTime->tm_mon + 1) << "-01";
+            cout << dateFormat.str() << endl;
+        }
+        else if (listDateRange->currentIndex() == 1)
+        {
+            cout << "IN 3 MONTH SECTION" << endl;
+            dateFormat << "" << (curTime->tm_year + 1900) << "-" << (curTime->tm_mon - 2) << "-01"; 
+        }
+        else
+        {
+            // 6 Months
+            cout << "IN 6 MONTH SECTION" << endl;
+            dateFormat << "" << (curTime->tm_year + 1900) << "-" << (curTime->tm_mon - 5) << "-01";
+        }
+ 
+        // First we want to go and get the transactions for a given date range
+        vector<US_Transaction> transactionList = _user->getMain().getAllTransactions(dateFormat.str());
+       // Clear transaction table before updating
+       table->clear();
+       table->elementAt(0,0)->addWidget(new WText("Date"));
+       table->elementAt(0,1)->addWidget(new WText("Type"));
+       table->elementAt(0,2)->addWidget(new WText("Transaction Description"));
+       table->elementAt(0,3)->addWidget(new WText("Cost")); 
+       // Check if transactions are empty
+       if (transactionList.size() == 0)
+       {
+           cout << "No transactions for given period" << endl;
+           table->elementAt(1, 0)->addWidget(new WText("N/A"));
+           table->elementAt(1, 1)->addWidget(new WText("N/A"));
+           table->elementAt(1, 2)->addWidget(new WText("N/A"));
+           table->elementAt(1, 3)->addWidget(new WText("N/A"));
+       }
+       else
+       {
+           cout << transactionList.size() << endl;
+           // Populate transactions in table
+           int row = 0;
+           for (int i = 0; i < transactionList.size(); i++)
+           {
+               row = i + 1;
+               // Populate the table
+               cout << transactionList.at(i).getDate() << endl;
+               // Get transaction date and format
+               string transactionDate = transactionList.at(i).getDate();
+               string formatDate = transactionDate.substr(1, transactionDate.size()-2);
+               table->elementAt(row, 0)->addWidget(new WText(formatDate));
+               table->elementAt(row, 1)->addWidget(new WText(transactionList.at(i).getType()));
+               table->elementAt(row, 2)->addWidget(new WText(transactionList.at(i).getName()));
+               ostringstream convertToString;
+               convertToString << transactionList.at(i).getValue();
+               table->elementAt(row, 3)->addWidget(new WText(convertToString.str()));
+           }
+       }
 
 }
 
-void US_TransactionsGUI::LoadTable(){
-	//Load table from db values	
+void US_TransactionsGUI::reloadMonthly(){
+       // Populate with current month info
+       listDateRange->setCurrentIndex(0);
+        cout << "BEFORE TRANSACTIONS" << endl;
+        // Set current index of list picker to 0 because will always revert to 1 month view
+        std::ostringstream dateFormat;
+        time_t timeObj = time(NULL);
+        struct tm *curTime = localtime(&timeObj);
+        // In the current month index so get the current month from UNIX
+        cout << "IN CURRENT MONTH SECTION" << endl;
+        dateFormat << "" << (curTime->tm_year + 1900) << "-" << (curTime->tm_mon + 1) << "-01";
+        cout << dateFormat.str() << endl;
+        // First we want to go and get the transactions for a given date range
+        vector<US_Transaction> transactionList = _user->getMain().getAllTransactions(dateFormat.str());
+        // Clear transaction table before updating
+       table->clear();
+       table->elementAt(0,0)->addWidget(new WText("Date"));
+       table->elementAt(0,1)->addWidget(new WText("Type"));
+       table->elementAt(0,2)->addWidget(new WText("Transaction Description"));
+       table->elementAt(0,3)->addWidget(new WText("Cost"));
+       // Check if transactions are empty
+       if (transactionList.size() == 0)
+       {
+           cout << "No transactions for given period" << endl;
+           table->elementAt(1, 0)->addWidget(new WText("N/A"));
+           table->elementAt(1, 1)->addWidget(new WText("N/A"));
+           table->elementAt(1, 2)->addWidget(new WText("N/A"));
+           table->elementAt(1, 3)->addWidget(new WText("N/A"));
+       }
+        else
+       {
+           cout << transactionList.size() << endl;
+           // Populate transactions in table
+           int row = 0;
+           for (int i = 0; i < transactionList.size(); i++)
+           {
+               row = i + 1;
+               // Populate the table
+               cout << transactionList.at(i).getDate() << endl;
+               // Get transaction date and format
+               string transactionDate = transactionList.at(i).getDate();
+               string formatDate = transactionDate.substr(1, transactionDate.size()-2);
+               table->elementAt(row, 0)->addWidget(new WText(formatDate));
+               table->elementAt(row, 1)->addWidget(new WText(transactionList.at(i).getType()));
+               table->elementAt(row, 2)->addWidget(new WText(transactionList.at(i).getName()));
+               ostringstream convertToString;
+               convertToString << transactionList.at(i).getValue();
+               table->elementAt(row, 3)->addWidget(new WText(convertToString.str()));
+           }
+       }
+
 }
 

@@ -44,14 +44,14 @@ public:
 	
 	void btnAddTransaction_Click();
 	void listDateRange_Change();
-	void LoadTable();
+	void reloadMonthly(); 
 
 	void handleInternalPath(const string &internalPath);
 
 private:
 
 	User* _user;
-
+        US_Workspace* workspace;
 	void btnAdd_Clicked();
 	void btnEdit_Clicked();
 		
