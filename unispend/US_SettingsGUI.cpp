@@ -229,10 +229,11 @@ void US_SettingsGUI::populateTable() {
                             case 2 :
                                 cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
                                 break;
-                            case 3 :
+                            case 3 : {
                                 std::string currDateFormatted = currTransaction->getDate().substr(1, currTransaction->getDate().size() - 2);
                                 cell->setText(currDateFormatted);
                                 break;
+                            }
                             case 4:
                                 // TODO: add in frequency column
                             case 5:
