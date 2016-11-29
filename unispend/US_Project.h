@@ -44,7 +44,6 @@ public:
     vector<US_Transaction> getAllTransactions(string date1, string date2);
     vector<US_Transaction> getTypeTransactions(string type);
     void addTransaction(US_Transaction);
-    void addTransaction(US_Transaction, string frequency);
     void deleteTransaction(US_Transaction oldTransaction);
     void deleteRepeatTransaction(string name, string type, double value);
     double sumAllTransactions(vector<US_Transaction>);

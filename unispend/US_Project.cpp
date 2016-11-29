@@ -322,74 +322,6 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     delete stmt;
 }
 
-//This method is used to add repeat transactions
-void US_Project::addTransaction(US_Transaction newTransaction, string frequency){
-    sql :: mysql :: MySQL_Driver *driver;
-    sql :: Connection *con;
-    sql :: Statement *stmt;
-    sql::ResultSet *res;
-
-    std::ostringstream vstr;
-    vstr << newTransaction.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
-    std::string val = vstr.str();
-
-    driver = sql::mysql::get_mysql_driver_instance();
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
-    stmt = con->createStatement();
-    stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT curdate()");
-    res->next();
-    string today = res->getString(1);
-    string sqlCommand;
-
-    if(newTransaction.getDate() <= today) {
-         sqlCommand =
-                "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`, `frequency`) VALUES ('" +
-                newTransaction.getUsername() + "','" + newTransaction.getName() + "','" + newTransaction.getType() +
-                "','" + val + "'," + newTransaction.getDate() + ",'0','" +
-                newTransaction.getProject() + "', '" + frequency + "')";
-        try {
-            stmt->execute(sqlCommand);
-        } catch (sql::SQLException e) {
-            cout << endl << "The ID is already in use please input a different id" << endl;
-        }
-    }
-    else{
-        sqlCommand = "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`, `frequency`) VALUES ('"+newTransaction.getUsername()+"','" + newTransaction.getName() + "','" + newTransaction.getType() + "','" +val+"',"+newTransaction.getDate()+",'"+newTransaction.getIsRecurring()+"','"+newTransaction.getProject()+"', '"+frequency+"')";
-        try{
-            stmt->execute(sqlCommand);
-        }catch(sql::SQLException e){
-            cout << endl << "The ID is already in use please input a different id" << endl;
-        }
-    }
-
-    // if project is main updat currentBalance and monthlyAllowance as a result of the new transaction
-    // if it's a scenario (not main) then just add the transaction to the scenario transaction vector.
-    if(projectName == "main" && newTransaction.getDate() <= today){
-        double newBalance = currentBalance - newTransaction.getValue();
-        double newMonthlyAllowance = monthlyAllowance - newTransaction.getValue();
-
-        std::ostringstream nMA; //new monthly Allowance
-        std::ostringstream Nb;
-        nMA << newMonthlyAllowance;
-        Nb << newBalance;
-        std::string nMAStr = nMA.str();
-        std::string Nbstr = Nb.str();
-
-        sqlCommand ="UPDATE projects SET currentBalance = " + Nbstr + " WHERE projectName = 'main' AND username = '"+username+"'";
-        stmt->execute(sqlCommand);
-
-        sqlCommand ="UPDATE projects SET monthlyAllowance = " + nMAStr + " WHERE projectName = 'main' AND username = '"+username+"'";
-        stmt->execute(sqlCommand);
-
-        this->currentBalance = newBalance; // adds the value of the transaction to the current balance
-        this->monthlyAllowance = newMonthlyAllowance;
-    }
-    this->transactions.push_back(newTransaction); // inserts the transaction at the end of vector
-    delete con;
-    delete stmt;
-}
-
 
 
 void US_Project::deleteTransaction(US_Transaction trans){
@@ -564,7 +496,7 @@ void US_Project:: repeatTransaction(string user, string name, string type, doubl
         else if (frequency == "yearly")
             date2.append(" year");
         US_Transaction trans = US_Transaction(user, name, type, value, date2, "1", project);
-        addTransaction(trans, frequency);
+        addTransaction(trans;
     }
 }
 
