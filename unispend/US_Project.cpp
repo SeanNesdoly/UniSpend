@@ -399,7 +399,7 @@ vector<US_Transaction> US_Project::getAllTransactions(){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        trans->setID(res->getString("ID"));
+        //trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -424,7 +424,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        trans->setID(res->getString("ID"));
+        //trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -447,7 +447,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date1, string date2
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        trans->setID(res->getString("ID"));
+        //trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
