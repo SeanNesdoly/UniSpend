@@ -63,10 +63,7 @@ double US_Transaction::getValue(){
 }
 
 string US_Transaction::getDate(){
-    if((int)date[0] == 39)
-        return date.substr(1, date.size()-2);
-    else
-	    return date;
+    return date;
 }
 
 string US_Transaction::getIsRecurring(){
