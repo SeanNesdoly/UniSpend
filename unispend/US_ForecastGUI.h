@@ -35,12 +35,12 @@ using namespace Wt;
 class US_ForecastGUI : public WContainerWidget {
 public:
     US_ForecastGUI(US_Workspace *parent);
+    void listScenarios_Changed(); // keep track of the currently selected scenario
 private:
     User* _user;
     US_Project* currScenario; // currently selected scenario
 
     // event handlers
-    void listScenarios_Changed(); // keep track of the currently selected scenario
     void btnUpdateBalanceAndDate_Click(); // update the current scenario's target balance & date
     void btnCreateNewScenario_Click(); // create a new scenario
 

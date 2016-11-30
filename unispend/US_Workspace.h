@@ -26,6 +26,11 @@
 
 #include "US_Login.h"
 #include "US_User.h"
+#include "US_OverviewGUI.h"
+#include "US_TransactionsGUI.h"
+#include "US_ForecastGUI.h"
+#include "US_SettingsGUI.h"
+
 
 using namespace Wt;
 
@@ -36,7 +41,7 @@ public:
     User *user; // authenticated user persisted throughout the application session
     WMenuItem *currentBalance; // current balance for the user
     WMenuItem* getLogoutLabel();
-    WStandardItemModel* modelTransactionData;
+    WStackedWidget* getTabStack();
 private:
     WContainerWidget* root; // root widget of the application
 

@@ -122,3 +122,7 @@ WMenuItem* US_Workspace::getLogoutLabel()
     return logout;
 }
 
+WStackedWidget* US_Workspace::getTabStack() {
+    return this->tabsStack;
+}
+

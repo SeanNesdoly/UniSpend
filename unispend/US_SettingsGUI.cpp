@@ -415,6 +415,17 @@ void US_SettingsGUI::btnAddTransaction_Click() {
         // user feedback
         lblMsgTransaction->setStyleClass("message");
         lblMsgTransaction->setText("Successfully added the following recurring transaction: " + name);
+
+        // ===================
+        // Update other tabs
+        // ===================
+        // TODO: overview tab
+
+        US_TransactionsGUI* transTab = dynamic_cast<US_TransactionsGUI*>(this->workspace->getTabStack()->widget(1));
+        transTab->listDateRange_Change();
+
+        US_ForecastGUI* forecastTab = dynamic_cast<US_ForecastGUI*>(this->workspace->getTabStack()->widget(2));
+        forecastTab->listScenarios_Changed();
     }
 }
 

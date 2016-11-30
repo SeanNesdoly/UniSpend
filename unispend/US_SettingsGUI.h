@@ -35,11 +35,10 @@ using namespace std;
 class US_SettingsGUI : public WContainerWidget {
 public:
     US_SettingsGUI(US_Workspace *parent);
+    void populateTable();
 private:
     User* _user;
     US_Workspace *workspace;
-
-    void populateTable();
 
     // event handlers
     void btnSaveProjectSettings_Click();
