@@ -251,7 +251,9 @@ void US_TransactionsGUI::listDateRange_Change() {
             cout << "IN 6 MONTH SECTION" << endl;
             dateFormat << "" << (curTime->tm_year + 1900) << "-" << (curTime->tm_mon - 5) << "-01";
         }
- 
+        
+        // Reset label
+        lblTest->setText("");
         // First we want to go and get the transactions for a given date range
         vector<US_Transaction> transactionList = _user->getMain().getAllTransactions(dateFormat.str());
        // Clear transaction table before updating
