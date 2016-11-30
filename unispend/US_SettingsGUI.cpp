@@ -321,21 +321,23 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
 
     string fName = txtFirstName->text().toUTF8();
     string lName = txtLastName->text().toUTF8();
-
+    
+    bool didSuccess = false;
     if (!failure) {
         try
         {
             if (pass.size() != 0)
             {
-            
                 // Update the password
                 _user->setPassword(pass);
+                didSuccess = true;
             }
             
             if (fName.size() != 0)
             {
                 // Update the first name
                 _user->setFirstName(fName);
+                didSuccess = true;
                 // Update the logout label
                 workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
             }
@@ -344,11 +346,21 @@ void US_SettingsGUI::btnSaveUserSettings_Click() {
             {
                 // Update the last name
                 _user->setLastName(lName);
+                didSuccess = true;
                 workspace->getLogoutLabel()->setText("Logout, " + _user->getFirstName() + " " + _user->getLastName());
             }
-           // If got here - values successfully updated
-           lblMsgUser->setText("Success!");
-           lblMsgUser->setStyleClass("message");
+           
+           if (didSuccess == true)
+           {
+               // If got here - values successfully updated
+               lblMsgUser->setText("Success!");
+               lblMsgUser->setStyleClass("message");
+           }
+           else
+           {
+               lblMsgUser->setText("Invalid! If updating passwords they cannot be empty");
+               lblMsgUser->setStyleClass("error");
+           }
         } catch (UserException& e)
         {
             lblMsgUser->setText(e.what());

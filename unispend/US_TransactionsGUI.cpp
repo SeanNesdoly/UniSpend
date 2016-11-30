@@ -144,7 +144,7 @@ US_TransactionsGUI::US_TransactionsGUI(US_Workspace *parent) : WContainerWidget(
 	//Test Label for exceptions
 	boxTest = new WGroupBox();
 	divLeft->addWidget(boxTest);
-	lblTest = new WLabel("Test");
+	lblTest = new WLabel("");
 	boxTest->addWidget(lblTest);
 
 	////////////////////	
@@ -186,10 +186,18 @@ void US_TransactionsGUI::btnAddTransaction_Click() {
     string valueStr = txtAddCost->text().toUTF8();
     cout << valueStr << endl;
 
+    // Reset label
+    lblTest->setText("");
     // Check for valid data
     if (dateStr.compare("") == 0 || typeStr.compare("") == 0 || transactionStr.compare("") == 0 || valueStr.compare("") == 0)
     {
         cout << "MUST ENTER VALUES FOR ALL FIELDS" << endl;
+        lblTest->setText("Invalid... Must enter values for all fields!");
+    }
+    else if (valueStr.find_first_not_of("012345.6789") != std::string::npos)
+    {
+        cout << "MUST BE NUMBER" << endl;
+        lblTest->setText("Cost must be a numeric entry! Please re-enter and try again.");
     }
     else
     {
@@ -197,6 +205,10 @@ void US_TransactionsGUI::btnAddTransaction_Click() {
         // Create the transaction and add to user
         US_Transaction trans(_user->getName(), transactionStr, typeStr, cost, dateStr, "0", "main");
         _user->addTransaction(trans);
+
+        // Update label
+        lblTest->setText("Success!");
+
         // Update label balance
         ostringstream curBalanceFormat;
         curBalanceFormat << "Balance on " << WDate::currentDate().toString().toUTF8() << ": " << _user->getMain().getCurrentBalance();
