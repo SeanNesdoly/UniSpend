@@ -204,7 +204,7 @@ void US_SettingsGUI::populateTable() {
         vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date (yyyy-mm-dd)", "Frequency", "# of Repeats", "Delete"};
         int numTransactions = allTransactions.size();// TODO: replace
         int numCols = headerRowVals.size(); // name | type | value | date | frequency | number of repeats | delete
-        for (int row = 0; row < numTransactions; row++) {
+        for (int row = 0; row < numTransactions + 1; row++) {
 
             if (row != 0) {
                 // update the current transaction for the row
@@ -234,8 +234,8 @@ void US_SettingsGUI::populateTable() {
                                 break;
                             }
                             case 3 : {
-                                std::string currDateFormatted = currTransaction->getDate().substr(1, currTransaction->getDate().size() - 2);
-                                cell->setText(currDateFormatted);
+                                //std::string currDateFormatted = currTransaction->getDate().substr(1, currTransaction->getDate().size() - 2);
+                                cell->setText(currTransaction->getDate());
                                 break;
                             }
                             case 4:
@@ -262,7 +262,7 @@ void US_SettingsGUI::populateTable() {
                             string name = dynamic_cast<WText*>(theRow->elementAt(0)->widget(0))->text().toUTF8();
                             string type = dynamic_cast<WText*>(theRow->elementAt(1)->widget(0))->text().toUTF8();
                             double value = boost::lexical_cast<double>(dynamic_cast<WText*>(theRow->elementAt(2)->widget(0))->text().toUTF8());
-
+                            std::cout << "DELETING RECURRING VALUE: " << value << std::endl;
                             // TODO: delete recurring transaction in database
                             _user->getMain().deleteRepeatTransaction(name, type, value);
 

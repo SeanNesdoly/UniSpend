@@ -297,7 +297,7 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
 
-    string sqlCommand = "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`) VALUES ('"+newTransaction.getUsername()+"','" + newTransaction.getName() + "','" + newTransaction.getType() + "','" +val+"',"+newTransaction.getDate()+",'"+newTransaction.getIsRecurring()+"','"+newTransaction.getProject()+"')";
+    string sqlCommand = "INSERT INTO `transactions` ( `username`,`name`, `type`, `value`, `date`, `isRecurring`,`project`) VALUES ('"+newTransaction.getUsername()+"','" + newTransaction.getName() + "','" + newTransaction.getType() + "','" +val+"','"+newTransaction.getDate()+"','"+newTransaction.getIsRecurring()+"','"+newTransaction.getProject()+"')";
 
     //if user attempts to input an ID that already exists the SQLException
     //error will be caught and the user will be asked to try again
@@ -305,7 +305,7 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     stmt->execute(sqlCommand);
 
        }catch(sql::SQLException e){
-       cout << endl << "The ID is already in use please input a different id" << endl;
+       cout << endl << "The ID is already in use please input a different id: " << newTransaction.getId() << endl;
     }
     // if project is main updat currentBalance and monthlyAllowance as a result of the new transaction 
     // if it's a scenario (not main) then just add the transaction to the scenario transaction vector.
@@ -367,6 +367,7 @@ void US_Project::deleteTransaction(US_Transaction trans){
          stmt->execute(sqlCommand);
 
     }
+    std::cout << "del_transaction date = " << trans.getDate() << "       =====ID: " << trans.getId() << std::endl;
     string sqlCommand = "DELETE from `transactions` WHERE `username` = '" +trans.getUsername()+"' AND `name` = '"+trans.getName()+"' AND `type` = '"+trans.getType()+"' AND `value` = '"+val.str()+"' AND `date` = '"+trans.getDate()+"' AND `project` ='"+trans.getProject()+"' AND `ID` = '"+trans.getId()+"'";
     try{
         stmt->execute(sqlCommand);
@@ -413,7 +414,7 @@ vector<US_Transaction> US_Project::getAllTransactions(){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        //trans->setID(res->getString("ID"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -438,7 +439,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date){
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        //trans->setID(res->getString("ID"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;
@@ -461,7 +462,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date1, string date2
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
-        //trans->setID(res->getString("ID"));
+        trans->setID(res->getString("ID"));
         results.push_back(*trans);
     }
     delete res;

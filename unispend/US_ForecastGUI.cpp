@@ -237,8 +237,8 @@ void US_ForecastGUI::listScenarios_Changed() {
                     break;
                   }
                   case 3:{
-                    std::string currDateFormatted = scenarioTransactions.at(row-1).getDate().substr(1, scenarioTransactions.at(row-1).getDate().size() - 2);
-                    cell->setText(currDateFormatted);
+                    //std::string currDateFormatted = scenarioTransactions.at(row-1).getDate().substr(1, scenarioTransactions.at(row-1).getDate().size() - 2);
+                    cell->setText(scenarioTransactions.at(row-1).getDate());
                   }
                 }
                 //tblScenarioData->elementAt(row, col)->addWidget(cell);

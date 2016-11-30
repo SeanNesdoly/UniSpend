@@ -9,10 +9,11 @@ US_Transaction::US_Transaction(string username, string name, string type, double
     this->username = username;
     this->type = type;
     this->value = value;
-    if(recurring == "0")
+    /*if(recurring == "0")
         this->date = "'" +date+ "'";
-    else
-        this->date = date;
+    else*/
+    std::cout << "Transaction Constructor: " << date << endl;
+    this->date = date;
     this->recurring = recurring;
 }
 

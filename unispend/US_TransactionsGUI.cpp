@@ -268,9 +268,9 @@ void US_TransactionsGUI::listDateRange_Change() {
                // Populate the table
                cout << transactionList.at(i).getDate() << endl;
                // Get transaction date and format
-               string transactionDate = transactionList.at(i).getDate();
-               string formatDate = transactionDate.substr(1, transactionDate.size()-2);
-               table->elementAt(row, 0)->addWidget(new WText(formatDate));
+               //string transactionDate = transactionList.at(i).getDate();
+               //string formatDate = transactionDate.substr(1, transactionDate.size()-2);
+               table->elementAt(row, 0)->addWidget(new WText(transactionList.at(i).getDate()));
                table->elementAt(row, 1)->addWidget(new WText(transactionList.at(i).getType()));
                table->elementAt(row, 2)->addWidget(new WText(transactionList.at(i).getName()));
                ostringstream convertToString;
@@ -342,9 +342,9 @@ void US_TransactionsGUI::reloadMonthly(){
                // Populate the table
                cout << transactionList.at(i).getDate() << endl;
                // Get transaction date and format
-               string transactionDate = transactionList.at(i).getDate();
-               string formatDate = transactionDate.substr(1, transactionDate.size()-2);
-               table->elementAt(row, 0)->addWidget(new WText(formatDate));
+               //string transactionDate = transactionList.at(i).getDate();
+               //string formatDate = transactionDate.substr(1, transactionDate.size()-2);
+               table->elementAt(row, 0)->addWidget(new WText(transactionList.at(i).getDate()));
                table->elementAt(row, 1)->addWidget(new WText(transactionList.at(i).getType()));
                table->elementAt(row, 2)->addWidget(new WText(transactionList.at(i).getName()));
                ostringstream convertToString;
