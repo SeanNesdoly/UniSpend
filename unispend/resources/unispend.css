@@ -79,6 +79,10 @@ input[type="password"] {
 	margin-bottom:20px;
 }
 
+.transaction td:last-child {
+    text-align: center;
+}
+
 /* Forecasting Tab */
 .forecasting {
     padding-left: 20px;

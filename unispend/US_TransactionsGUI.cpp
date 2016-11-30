@@ -363,7 +363,7 @@ void US_TransactionsGUI::reloadMonthly(){
                    // TODO: delete transaction in database
                    vector<US_Transaction> transactionsInCurrRange = _user->getMain().getAllTransactions(table->attributeValue("trans_from_date").toUTF8());
                    US_Transaction transToDelete = transactionsInCurrRange.at(boost::lexical_cast<int>(imgDelete->attributeValue("row")) - 1);
-                   cout << transToDelete.getId() << " " << transToDelete.getName() << endl;
+                   cout << "DELETING TRANSACTION: " << transToDelete.getId() << " " << transToDelete.getName() << endl;
                    _user->deleteTransaction(transToDelete);
 
                    // TODO: update current balance label

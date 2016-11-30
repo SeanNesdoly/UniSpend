@@ -249,7 +249,6 @@ void US_SettingsGUI::populateTable() {
 
                     // add the cell to the table
                     tblRecurringCosts->elementAt(row, col)->addWidget(cell);
-                    //tblRecurringCosts->elementAt(row, col)
                 } else {
                     if (row != 0) {
                         // delete icon
