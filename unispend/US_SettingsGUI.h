@@ -28,6 +28,8 @@
 #include <string>
 #include "US_Workspace.h"
 #include "US_User.h"
+#include "US_TransactionsGUI.h"
+#include "US_ForecastGUI.h"
 
 using namespace Wt;
 using namespace std;

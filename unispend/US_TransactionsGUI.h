@@ -30,6 +30,8 @@
 #include "US_Workspace.h"
 #include "US_User.h"
 #include "US_Project.h"
+#include "US_ForecastGUI.h"
+#include "US_SettingsGUI.h"
 
 using namespace std;
 using namespace Wt;

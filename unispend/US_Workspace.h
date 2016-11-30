@@ -26,10 +26,10 @@
 
 #include "US_Login.h"
 #include "US_User.h"
-#include "US_OverviewGUI.h"
-#include "US_TransactionsGUI.h"
-#include "US_ForecastGUI.h"
-#include "US_SettingsGUI.h"
+//#include "US_OverviewGUI.h"
+//#include "US_TransactionsGUI.h"
+//#include "US_ForecastGUI.h"
+//#include "US_SettingsGUI.h"
 
 
 using namespace Wt;
