@@ -41,7 +41,12 @@ public:
     User *user; // authenticated user persisted throughout the application session
     WMenuItem *currentBalance; // current balance for the user
     WMenuItem* getLogoutLabel();
-    WStackedWidget* getTabStack();
+
+    US_OverviewGUI* overviewTab;
+    US_TransactionsGUI* transTab;
+    US_ForecastGUI* forecastTab;
+    US_SettingsGUI* settingsTab;
+
 private:
     WContainerWidget* root; // root widget of the application
 

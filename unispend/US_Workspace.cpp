@@ -77,11 +77,17 @@ US_Workspace::US_Workspace(WContainerWidget *parent, User *currUser):
     leftMenu = new WMenu(tabsStack);
     navigationBar->addMenu(leftMenu);
 
+    // instantiate tab containers
+    overviewTab = new US_OverviewGUI(this);
+    transTab = new US_TransactionsGUI(this);
+    forecastTab = new US_ForecastGUI(this);
+    settingsTab = new US_SettingsGUI(this);
+
     // add in the containers for each tab
-    leftMenu->addItem("Overview", new US_OverviewGUI(this));
-    leftMenu->addItem("Transactions", new US_TransactionsGUI(this));
-    leftMenu->addItem("Forecasting", new US_ForecastGUI(this));
-    leftMenu->addItem("Settings", new US_SettingsGUI(this));
+    leftMenu->addItem("Overview", overviewTab);
+    leftMenu->addItem("Transactions", transTab);
+    leftMenu->addItem("Forecasting", forecastTab);
+    leftMenu->addItem("Settings", settingsTab);
 
     // right aligned menu
     rightMenu = new WMenu();
@@ -121,8 +127,3 @@ WMenuItem* US_Workspace::getLogoutLabel()
 {
     return logout;
 }
-
-WStackedWidget* US_Workspace::getTabStack() {
-    return this->tabsStack;
-}
-

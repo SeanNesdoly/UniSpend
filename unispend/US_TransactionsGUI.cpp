@@ -228,9 +228,10 @@ void US_TransactionsGUI::btnAddTransaction_Click() {
         // ===================
         // TODO: overview tab
 
+        this->workspace->forecastTab->listScenarios_Changed();
+        this->workspace->settingsTab->populateTable();
         /*US_ForecastGUI* forecastTab = dynamic_cast<US_ForecastGUI*>(this->workspace->getTabStack()->widget(2));
         forecastTab->listScenarios_Changed();
-
         US_SettingsGUI* settingTab = dynamic_cast<US_SettingsGUI*>(this->workspace->getTabStack()->widget(3));
         settingTab->populateTable();*/
     }
