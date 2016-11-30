@@ -231,12 +231,14 @@ void US_ForecastGUI::listScenarios_Changed() {
                     break;
                   }
                   case 2:{
-                    string val = boost::lexical_cast<string>(scenarioTransactions.at(row-1).getValue());
-                    cell->setText(val);
+                      ostringstream convertToString;
+                      convertToString << scenarioTransactions.at(row-1).getValue();
+                      cell->setText(convertToString.str());
                     break;
                   }
                   case 3:{
-                    cell->setText(scenarioTransactions.at(row-1).getDate());
+                    std::string currDateFormatted = scenarioTransactions.at(row-1).getDate().substr(1, scenarioTransactions.at(row-1).getDate().size() - 2);
+                    cell->setText(currDateFormatted);
                   }
                 }
                 //tblScenarioData->elementAt(row, col)->addWidget(cell);

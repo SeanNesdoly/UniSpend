@@ -41,7 +41,9 @@ private:
     Wt::Chart::WCartesianChart* barch;
     Wt::Chart::WCartesianChart* scatch;
     Wt::Chart::WDataSeries* series;
+    Wt::Chart::WDataSeries* scatseries;
     WStandardItemModel* model;
+    WStandardItemModel* scatmodel;
     WLabel* lblStartDate;
     WLabel* lblEndDate;
     WLabel* lblMsg;

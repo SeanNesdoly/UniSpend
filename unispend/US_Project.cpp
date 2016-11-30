@@ -334,6 +334,8 @@ void US_Project::addTransaction(US_Transaction newTransaction){
     delete stmt;
 }
 
+
+
 void US_Project::deleteTransaction(US_Transaction trans){
     sql::mysql::MySQL_Driver *driver;
     sql::Connection *con;
@@ -455,7 +457,7 @@ vector<US_Transaction> US_Project::getAllTransactions(string date1, string date2
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `date` > '" +date1+ "' AND `date` < '"+date2+ "' AND `username` = '"+username+ "' AND `project` = '"+projectName+"'");
+    res = stmt->executeQuery("SELECT * FROM  `transactions` WHERE `date` >= '" +date1+ "' AND `date` <= '"+date2+ "' AND `username` = '"+username+ "' AND `project` = '"+projectName+"'");
     while(res->next()){
         US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
                 ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));

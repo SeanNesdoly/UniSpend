@@ -190,6 +190,7 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 
     // user feedback
     lblMsgTransaction = new WLabel();
+    lblMsgTransaction->setWordWrap(true);
     boxAddTransaction->addWidget(lblMsgTransaction);
 }
 
@@ -226,9 +227,12 @@ void US_SettingsGUI::populateTable() {
                             case 1 :
                                 cell->setText(currTransaction->getType());
                                 break;
-                            case 2 :
-                                cell->setText(boost::lexical_cast<std::string>(currTransaction->getValue()));
+                            case 2 : {
+                                ostringstream convertToString;
+                                convertToString << currTransaction->getValue();
+                                cell->setText(convertToString.str());
                                 break;
+                            }
                             case 3 : {
                                 std::string currDateFormatted = currTransaction->getDate().substr(1, currTransaction->getDate().size() - 2);
                                 cell->setText(currDateFormatted);
