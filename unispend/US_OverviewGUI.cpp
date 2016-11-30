@@ -126,10 +126,12 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
         for(int l=0; l<sizeofday;l++){
             totalspend+=onedaytransactions.at(l).getValue();
         }
+
         cout<<"\n";
         cout<<curdate;
         cout<<"\n";
         cout<<totalspend;
+
         scatmodel->setData(k, 0,WString(curdate));
         scatmodel->setData(k, 1, totalspend);
     }
