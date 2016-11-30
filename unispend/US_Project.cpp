@@ -133,6 +133,8 @@ US_Project::US_Project(string username, double currentBalance){
     this->username = username;
     this->currentBalance = currentBalance;
     this->monthlyAllowance = monthly;
+    this->targetDate = "2017-04-30";
+    this->yearBalance = currentBalance;
     delete res;
     delete con;
     delete stmt;
@@ -204,13 +206,14 @@ sql::mysql::MySQL_Driver *driver;
     stmt->execute("USE US_Database");
     res2 = stmt->executeQuery("SELECT * FROM `users` WHERE `username` ='"+username+"'");
     res2->next();
-    res = stmt->executeQuery("SELECT DATEDIFF('"+targetDate +"','" +res2->getString("signUpDate")+ "')");
-    cout << res2->getString("signUpDate") << endl;
+    string signUpDate = res2->getString("signUpDate");
+    res = stmt->executeQuery("SELECT DATEDIFF('"+targetDate +"','" +signUpDate+ "')");
+    cout << signUpDate << endl;
     res->next();
     cout << "Days in year since start " << res->getInt(1) << endl;
     double expectedDailyAverage = yearBalance/res->getDouble(1);
     cout << "this is expected Daily average " << expectedDailyAverage << endl;
-    res = stmt->executeQuery("SELECT DATEDIFF( NOW(),'" +res2->getString("signUpDate")+ "')");
+    res = stmt->executeQuery("SELECT DATEDIFF( NOW(),'" + signUpDate + "')");
     res->next();
     cout << "This is how many days since started " << res->getInt(1) << endl;
     double currDailyAverage = (yearBalance - currentBalance)/res->getDouble(1);
@@ -220,6 +223,10 @@ sql::mysql::MySQL_Driver *driver;
     double actualSpent = currDailyAverage * res->getDouble(1);
     cout <<"actual spent " << actualSpent << endl;
     double difference = expectedSpent - actualSpent;
+    delete res2;
+    delete res;
+    delete con;
+    delete stmt;
 
     return difference;
 }
@@ -237,8 +244,13 @@ double US_Project::getAverage(vector<US_Transaction> transactionsList){
     stmt->execute("USE US_Database");
     res2 = stmt->executeQuery("SELECT * FROM `users` WHERE `username` ='"+username+"'");
     res2->next();
-    res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +res2->getString("signUpDate")+ "')");
-    res->next();
+    if(projectName == "main"){
+        res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +res2->getString("signUpDate")+ "')");
+        res->next();
+    }else{
+        res = stmt->executeQuery("SELECT DATEDIFF(NOW(), '" +startDate+ "')");
+        res->next();
+    }
     double sum = this->sumAllTransactions(transactionsList);
     int numOfDays = res->getInt(1)+1;
     double average = sum/numOfDays;

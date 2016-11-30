@@ -34,12 +34,11 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     // current scenario selection
     lblScenario = new WLabel("Current Scenario:");
     listScenarios = new WComboBox();
-    listScenarios->addItem("");
+    listScenarios->addItem("Select a scenario");
     for(int i=0; i < _user->getScenarios().size(); i++){
     	listScenarios->addItem(_user->getScenarios().at(i).getProjectName());
     }
     // TODO: get scenarios!
-
     listScenarios->changed().connect(this, &US_ForecastGUI::listScenarios_Changed);
     lblScenario->setBuddy(listScenarios);
     boxForecastParams->addWidget(lblScenario);
@@ -206,7 +205,7 @@ void US_ForecastGUI::listScenarios_Changed() {
              barMoneySpent->setValue(moneyLeftover);
              lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+ _user->getScenarios().at(i).getTargetDate());
 
-             boxScenarioContent->setTitle(_user->getScenarios().at(i).getProjectName() + " Transactions");
+             boxScenarioContent->setTitle(_user->getScenarios().at(i).getProjectName() + " Cost: $" + boost::lexical_cast<string>( _user->getScenarios().at(i).getScenarioCost()) );
              lblSpendingWithoutScenario->setText("Average ($/day) since planning for " + _user->getScenarios().at(i).getProjectName());
         }
     }
@@ -276,8 +275,10 @@ void US_ForecastGUI::btnUpdateBalanceAndDate_Click() {
                     _user->getScenarios().at(i).setScenarioCost(balance);
                     _user->getScenarios().at(i).setTargetDate(strTargetDate);
                     lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+strTargetDate);
+                    boxScenarioContent->setTitle(_user->getScenarios().at(i).getProjectName() + " Cost: $" + boost::lexical_cast<string>( balance) );
                 }else if(strBalance != "" && strTargetDate == strCurrentDate){
                     _user->getScenarios().at(i).setScenarioCost(balance);
+                     boxScenarioContent->setTitle(_user->getScenarios().at(i).getProjectName() + " Cost: $" + boost::lexical_cast<string>( balance) );
                 }else if(strBalance == "" && strTargetDate != strCurrentDate){
                     _user->getScenarios().at(i).setTargetDate(strTargetDate);
                     lblScenarioRange->setText( "<b>" + _user->getScenarios().at(i).getProjectName() + "</b>" + "<b> Transactions in the Range: </b>" + _user->getScenarios().at(i).getStartDate() +" - "+strTargetDate);
@@ -286,8 +287,8 @@ void US_ForecastGUI::btnUpdateBalanceAndDate_Click() {
                     lblMsg1->setText("new cost and target date need to be changed before updating");
                 }
 
-                double scenarioCost = _user->getScenarios().at(i).getScenarioCost();
-                double moneyLeftover = _user->getMain().getLeftover();
+                double scenarioCost = balance;
+                double moneyLeftover = _user->getMain().getRemainder();
                 barMoneySpent->setRange(0,scenarioCost);
                 barMoneySpent->setValue(moneyLeftover);
             }
