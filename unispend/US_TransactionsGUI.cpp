@@ -188,16 +188,19 @@ void US_TransactionsGUI::btnAddTransaction_Click() {
 
     // Reset label
     lblTest->setText("");
+    lblTest->setStyleClass("message");
     // Check for valid data
     if (dateStr.compare("") == 0 || typeStr.compare("") == 0 || transactionStr.compare("") == 0 || valueStr.compare("") == 0)
     {
         cout << "MUST ENTER VALUES FOR ALL FIELDS" << endl;
         lblTest->setText("Invalid... Must enter values for all fields!");
+        lblTest->setStyleClass("error");
     }
     else if (valueStr.find_first_not_of("012345.6789") != std::string::npos)
     {
         cout << "MUST BE NUMBER" << endl;
         lblTest->setText("Cost must be a numeric entry! Please re-enter and try again.");
+        lblTest->setStyleClass("error");
     }
     else
     {
@@ -208,6 +211,7 @@ void US_TransactionsGUI::btnAddTransaction_Click() {
 
         // Update label
         lblTest->setText("Success!");
+        lblTest->setStyleClass("message");
 
         // Update label balance
         ostringstream curBalanceFormat;
@@ -265,6 +269,7 @@ void US_TransactionsGUI::listDateRange_Change() {
         
         // Reset label
         lblTest->setText("");
+        lblTest->setStyleClass("message");
         // First we want to go and get the transactions for a given date range
         vector<US_Transaction> transactionList = _user->getMain().getAllTransactions(dateFormat.str());
        // Clear transaction table before updating
