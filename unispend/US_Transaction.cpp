@@ -51,7 +51,7 @@ string US_Transaction::getProject(){
 string US_Transaction::getUsername(){
     return username;
 }
-string US_Transaction::getName(){
+string US_Transaction::getName() const{
     return name;
 }
 
@@ -74,6 +74,14 @@ string US_Transaction::getIsRecurring(){
 string US_Transaction::getId(){
     return id;
 }
+
+bool operator==(const US_Transaction& left, const US_Transaction& right){
+    if(left.getName() == right.getName())
+        return true;
+    else
+        return false;
+}
+
 
 //boost::gregorian::date US_Transaction::getDate(){
 //    return date;

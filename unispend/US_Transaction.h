@@ -21,7 +21,7 @@ class US_Transaction{
 public:
     US_Transaction(string username, string name, string type, double value, string date, string recurring, string project);
     string getProject();
-    string getName();
+    string getName() const;
     string getUsername();
     string getType();
     double getValue();
@@ -35,6 +35,7 @@ public:
     void setProjectName(const string projectName);
     void setRecurring(const string recurring);
     void setID(const string ID);
+
 //    void setDate(const boost::gregorian::date date);
 
 
@@ -48,6 +49,8 @@ private:
     string recurring;
     string id;
 };
+
+bool operator==(const US_Transaction& left, const US_Transaction& right);
 
 
 #endif //TRANSACTIONS_US_TRANSACTION_H
