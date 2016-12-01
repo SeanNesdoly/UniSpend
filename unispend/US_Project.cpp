@@ -705,7 +705,7 @@ string US_Project::getFrequency(US_Transaction repeatTrans){
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT `frequency` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
+    res = stmt->executeQuery("SELECT `frequency` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring` = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
     res->next();
     string freq = res->getString("frequency");
 
@@ -759,7 +759,7 @@ int US_Project::getRepeats(US_Transaction repeatTrans){
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
     stmt->execute("USE US_Database");
-    res = stmt->executeQuery("SELECT `repeats` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
+    res = stmt->executeQuery("SELECT `repeats` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring` = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
     res->next();
     int rep = res->getInt("repeats");
 
