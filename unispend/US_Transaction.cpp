@@ -51,7 +51,7 @@ string US_Transaction::getProject(){
 string US_Transaction::getUsername(){
     return username;
 }
-string US_Transaction::getName(){
+string US_Transaction::getName() const{
     return name;
 }
 

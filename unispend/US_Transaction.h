@@ -21,7 +21,7 @@ class US_Transaction{
 public:
     US_Transaction(string username, string name, string type, double value, string date, string recurring, string project);
     string getProject();
-    string getName();
+    string getName() const;
     string getUsername();
     string getType();
     double getValue();
