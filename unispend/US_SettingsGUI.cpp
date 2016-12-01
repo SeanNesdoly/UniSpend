@@ -197,7 +197,15 @@ US_SettingsGUI::US_SettingsGUI(US_Workspace *parent)
 // populate the recurring transactions table
 void US_SettingsGUI::populateTable() {
     if (_user != nullptr) {
-        vector<US_Transaction> allTransactions = _user->getMain().getAllTransactions();
+        vector<US_Transaction> allTransactions = _user->getMain().getRepeatTransaction();
+
+        vector<string> freqs;
+        vector<int> repeats;
+        for (int j = 0; j < allTransactions.size(); j++) {
+            freqs.push_back(_user->getMain().getFrequency(allTransactions.at(j)));
+            repeats.push_back(_user->getMain().getRepeats(allTransactions.at(j)));
+        }
+
         US_Transaction *currTransaction = nullptr;
 
 
@@ -238,10 +246,16 @@ void US_SettingsGUI::populateTable() {
                                 cell->setText(currTransaction->getDate());
                                 break;
                             }
-                            case 4:
-                                // TODO: add in frequency column
-                            case 5:
-                                // TODO: add in # of repeats column
+                            case 4: {
+                                cell->setText(freqs.at(row - 1));
+                                break;
+                            }
+                            case 5: {
+                                std::ostringstream rStr;
+                                rStr << repeats.at(row - 1);
+                                cell->setText(rStr.str());
+                                break;
+                            }
                             default:
                                 cell->setText("Item " + boost::lexical_cast<std::string>(row) + ", " + boost::lexical_cast<std::string>(col));
                         }
