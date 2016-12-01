@@ -35,6 +35,7 @@ public:
     void setProjectName(const string projectName);
     void setRecurring(const string recurring);
     void setID(const string ID);
+
 //    void setDate(const boost::gregorian::date date);
 
 
@@ -48,6 +49,8 @@ private:
     string recurring;
     string id;
 };
+
+bool operator==(US_Transaction& left, US_Transaction& right);
 
 
 #endif //TRANSACTIONS_US_TRANSACTION_H

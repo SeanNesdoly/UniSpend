@@ -75,6 +75,14 @@ string US_Transaction::getId(){
     return id;
 }
 
+bool operator==(US_Transaction& left, US_Transaction& right){
+    if(left.getName() == right.getName())
+        return true;
+    else
+        return false;
+}
+
+
 //boost::gregorian::date US_Transaction::getDate(){
 //    return date;
 //}
