@@ -50,7 +50,7 @@ private:
     string id;
 };
 
-bool operator==(US_Transaction& left, US_Transaction& right);
+bool operator==(const US_Transaction& left, const US_Transaction& right);
 
 
 #endif //TRANSACTIONS_US_TRANSACTION_H

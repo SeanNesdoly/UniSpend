@@ -75,7 +75,7 @@ string US_Transaction::getId(){
     return id;
 }
 
-bool operator==(US_Transaction& left, US_Transaction& right){
+bool operator==(const US_Transaction& left, const US_Transaction& right){
     if(left.getName() == right.getName())
         return true;
     else
