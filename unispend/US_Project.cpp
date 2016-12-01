@@ -692,3 +692,80 @@ void US_Project::setSignUpDate(){
     string sqlCommand ="UPDATE users SET signUpDate = '2016-11-25' WHERE username = '"+username+"'";
     stmt->execute(sqlCommand);
 }
+
+string US_Project::getFrequency(US_Transaction repeatTrans){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    std::ostringstream vstr;
+    vstr << newTransaction.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
+    std::string val = vstr.str();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT `frequency` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
+    res->next();
+    string freq = res->getString("frequency");
+
+    delete res;
+    delete con;
+    delete stmt;
+    return freq;
+}
+
+vector<US_Transaction> US_Project::getRepeatTransaction(){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    vector<US_Transaction> results;
+
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+
+    string sqlCommand = "SELECT * FROM `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring` = '1'";
+    res = stmt->executeQuery(sqlCommand);
+    while(res->next()){
+        US_Transaction* trans = new US_Transaction(res->getString("username"), res->getString("name"), res->getString("type"), res->getDouble("value")
+                ,res->getString("date"), res->getString("isRecurring"), res->getString("project"));
+        results.push_back(*trans);
+    }
+    vector<US_Transaction> newResults;
+    newResults.push_back(results.at(0));
+
+    for(int i = 1; i < results.size(); i++){
+        if ( std::find(newResults.begin(), newResults.end(), results.at(i)) != results.end() )
+            cout << "found " << endl;
+        else
+            newResults.push_back(results.at(i));
+    }
+    return newResults;
+}
+
+
+int US_Project::getRepeats(US_Transaction repeatTrans){
+    sql::mysql::MySQL_Driver *driver;
+    sql::Connection *con;
+    sql::Statement *stmt;
+    sql::ResultSet *res;
+    driver = sql::mysql::get_mysql_driver_instance();
+    std::ostringstream vstr;
+    vstr << newTransaction.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
+    std::string val = vstr.str();
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
+    stmt = con->createStatement();
+    stmt->execute("USE US_Database");
+    res = stmt->executeQuery("SELECT `repeats` FROM  `transactions` WHERE `username` = '" +username+ "' AND `project` = 'main' AND `isRecurring = '1' AND `type` = '" +repeatTrans.getType()+ "' AND `value` = '" +val+ "' AND `name` = '"+repeatTrans.getName()+"'");
+    res->next();
+    int rep = res->getInt("repeats");
+
+    delete res;
+    delete con;
+    delete stmt;
+    return rep;
+}
+

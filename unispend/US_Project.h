@@ -52,6 +52,9 @@ public:
     double getRequiredRate();
     double getRemainder();
     void updateBalance(double newBalance);
+    vector<US_Transaction> getRepeatTransaction();
+    string getFrequency(US_Transaction repeatTrans);
+    int getRepeats(US_Transaction repeatTrans);
     void repeatTransaction(string user, string name, string type, double value, string date, string project, string frequency, int range);
 protected:
     int id;
