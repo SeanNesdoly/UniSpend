@@ -700,7 +700,7 @@ string US_Project::getFrequency(US_Transaction repeatTrans){
     sql::ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     std::ostringstream vstr;
-    vstr << newTransaction.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
+    vstr << repeatTrans.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
     std::string val = vstr.str();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
@@ -754,7 +754,7 @@ int US_Project::getRepeats(US_Transaction repeatTrans){
     sql::ResultSet *res;
     driver = sql::mysql::get_mysql_driver_instance();
     std::ostringstream vstr;
-    vstr << newTransaction.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
+    vstr << repeatTrans.getValue(); //use the string stream just like cout, except the stream prints not to stdout but to a string.
     std::string val = vstr.str();
     con = driver->connect("tcp://127.0.0.1:3306", "root", "lovelace320");
     stmt = con->createStatement();
