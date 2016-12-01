@@ -42,11 +42,6 @@ public:
     WMenuItem *currentBalance; // current balance for the user
     WMenuItem* getLogoutLabel();
 
-    US_OverviewGUI* overviewTab;
-    US_TransactionsGUI* transTab;
-    US_ForecastGUI* forecastTab;
-    US_SettingsGUI* settingsTab;
-
 private:
     WContainerWidget* root; // root widget of the application
 

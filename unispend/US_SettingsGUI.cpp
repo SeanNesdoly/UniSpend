@@ -421,8 +421,8 @@ void US_SettingsGUI::btnAddTransaction_Click() {
         // ===================
         // TODO: overview tab
 
-        this->workspace->transTab->reloadMonthly();
-        this->workspace->forecastTab->listScenarios_Changed();
+        //this->workspace->transTab->reloadMonthly();
+        //this->workspace->forecastTab->listScenarios_Changed();
         /*US_TransactionsGUI* transTab = dynamic_cast<US_TransactionsGUI*>(this->workspace->getTabStack()->widget(1));
         transTab->listDateRange_Change();
         US_ForecastGUI* forecastTab = dynamic_cast<US_ForecastGUI*>(this->workspace->getTabStack()->widget(2));
