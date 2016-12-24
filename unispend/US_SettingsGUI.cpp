@@ -201,20 +201,26 @@ void US_SettingsGUI::populateTable() {
 
         vector<string> freqs;
         vector<int> repeats;
-        for (int j = 0; j < allTransactions.size(); j++) {
+	int max = allTransactions.size();
+        for (int j = 0; j < max; j++) {
             freqs.push_back(_user->getMain().getFrequency(allTransactions.at(j)));
             repeats.push_back(_user->getMain().getRepeats(allTransactions.at(j)));
         }
+	std::cout << "freqs size: " << freqs.size() << std::endl;
+	std::cout << "repeats size: " << repeats.size() << std::endl;	
 
         US_Transaction *currTransaction = nullptr;
 
-
-        vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date (yyyy-mm-dd)", "Frequency", "# of Repeats", "Delete"};
+	
+        vector<string> headerRowVals = {"Name", "Type", "Value ($)", "Start Date", "Frequency", "# of Repeats", "Delete"};
         int numTransactions = allTransactions.size();// TODO: replace
         int numCols = headerRowVals.size(); // name | type | value | date | frequency | number of repeats | delete
         for (int row = 0; row < numTransactions + 1; row++) {
 
             if (row != 0) {
+	 	if (allTransactions.empty()) {
+		    break; // no repeats to add
+		}
                 // update the current transaction for the row
                 currTransaction = &allTransactions.at(row - 1);
             }

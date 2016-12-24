@@ -735,10 +735,13 @@ vector<US_Transaction> US_Project::getRepeatTransaction(){
         results.push_back(*trans);
     }
     vector<US_Transaction> newResults;
+    if (results.size() == 0) {
+        return results;
+    }
     newResults.push_back(results.at(0));
 
     for(int i = 1; i < results.size(); i++){
-        if ( std::find(newResults.begin(), newResults.end(), results.at(i)) != results.end() )
+        if ( std::find(newResults.begin(), newResults.end(), results.at(i)) != newResults.end() )
             cout << "found " << endl;
         else
             newResults.push_back(results.at(i));

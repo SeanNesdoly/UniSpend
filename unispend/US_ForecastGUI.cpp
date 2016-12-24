@@ -150,7 +150,8 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
     //lblMoneySpent = new WLabel("<b>Current $ allocation towards target balance:</b>");
     barMoneySpent = new WProgressBar();
     barMoneySpent->setFormat("Leftover $ towards target balance %.0f %%");
-    barMoneySpent->resize(Wt::WLength("100%"),100);
+    barMoneySpent->resize(300,100);
+    barMoneySpent->setInline(false);
     boxScenarioAnalysis->addWidget(barMoneySpent);
 
     // leftover amount after scenario
@@ -179,9 +180,10 @@ US_ForecastGUI::US_ForecastGUI(US_Workspace *parent):
 
     // average spending WITHOUT scenario costs applied
     lblSpendingWithoutScenario = new WLabel("Average ($/day) since planning for Scenario:"); // TODO: scenario name
+    lblSpendingWithoutScenario->setWordWrap(true);
     txtSpendingWithoutScenario = new WLineEdit();
     txtSpendingWithoutScenario->setEnabled(false);
-    txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
+    //txtSpendingWithoutScenario->setText("$ AVG_SPENDING_WITHOUT_SCENARIO");
     lblSpendingWithoutScenario->setBuddy(txtSpendingWithoutScenario);
     boxScenarioAnalysis->addWidget(lblSpendingWithoutScenario);
     boxScenarioAnalysis->addWidget(txtSpendingWithoutScenario);

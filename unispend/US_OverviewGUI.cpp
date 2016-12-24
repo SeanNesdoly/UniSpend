@@ -29,14 +29,14 @@ US_OverviewGUI::US_OverviewGUI(US_Workspace *parent):
     int currentDmonth = now->tm_mon+1;
     int currentDday = now->tm_mday;
     int startDday=currentDday;
-    int startDmonth=currentDmonth;
+    int startDmonth=currentDmonth - 6;
     int startDyear=currentDyear;
     if (startDmonth==1){
         startDyear=currentDyear-1;
         startDmonth=12;
     }
     else{
-        startDmonth=currentDmonth-1;
+        startDmonth=currentDmonth-6;
     }
 
     //Add start date

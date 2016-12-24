@@ -110,10 +110,15 @@ input[type="password"] {
 
 .forecasting div {
     margin-bottom: 20px;
+    display: block;
 }
 
 .progress .bar-label {
     font-weight: bold;
+}
+
+.progress div {
+    display: block;
 }
 
 /* Settings Tab */
